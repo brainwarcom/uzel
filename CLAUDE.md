@@ -1,105 +1,216 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with
+code in this repository.
 
-This is a greenfield self-hosted Windows chat platform with two executables: a Go server (`chatserver.exe`) and a native Windows client (`chatclient.exe`). Neither has been implemented yet — consult the spec files before writing any code.
+OwnCord is a self-hosted Windows chat platform with two
+components: a Go server (`chatserver.exe`) and a Tauri v2
+desktop client (Rust + TypeScript).
+
+## Project Brain
+
+This project uses an Obsidian vault at `docs/brain/`
+as the single source of truth for project state.
+Read and write to it during every session.
+
+### On Session Start
+
+1. Read `docs/brain/Dashboard.md` to get oriented
+2. Read `docs/brain/02-Tasks/In Progress.md` to see what's active
+3. Read `docs/brain/05-Bugs/Open Bugs.md` to see outstanding bugs
+4. Create a session log at
+   `docs/brain/03-Sessions/YYYY-MM-DD-summary.md`
+   using `docs/brain/Templates/Session Log.md`
+
+### On Session End
+
+1. Update the session log with everything that was done
+2. Move completed tasks from `In Progress.md` to `Done.md`
+3. Update `In Progress.md` with any newly started but unfinished work
+4. If any architectural decisions were made, log them in `docs/brain/04-Decisions/`
+
+### Task Management
+
+- Tasks live in `docs/brain/02-Tasks/` across files:
+  `Backlog.md`, `In Progress.md`, `Done.md`
+- Format: `- [ ] **T-XXX:** Description` (use incrementing IDs)
+- When starting a task, move it from Backlog → In Progress
+- When finishing, check the box and move it from
+  In Progress → Done with a completion date
+- New tasks discovered during work go into Backlog under the appropriate priority
+
+### Decision Logging
+
+- Any significant technical choice (library, arch,
+  protocol, trade-off) gets a decision record
+- Use template at `docs/brain/Templates/Decision.md`
+- Save as `docs/brain/04-Decisions/DEC-XXX-short-title.md` (incrementing IDs)
+- Statuses: `proposed` → `accepted` | `rejected` | `superseded`
+
+### Bug Tracking
+
+- Use template at `docs/brain/Templates/Bug Report.md`
+- Save as `docs/brain/05-Bugs/BUG-XXX-short-title.md` (incrementing IDs)
+- Update `docs/brain/05-Bugs/Open Bugs.md` — add to
+  Active, move to Resolved when fixed
+- Statuses: `open` → `investigating` → `fixed` | `wontfix`
+
+### Requirements & Architecture
+
+- When requirements change or are discovered, update `docs/brain/00-Overview/Requirements.md`
+- When architecture evolves, update `docs/brain/01-Architecture/Design.md`
+- When dependencies change, update `docs/brain/01-Architecture/Tech Stack.md`
+- Always log the *reason* for changes via a decision record
+
+### Conventions
+
+- Use `[[wiki-links]]` for cross-references between vault files
+- Use ISO dates: `YYYY-MM-DD`
+- Replace `{{date}}` in templates with the actual date
+- Keep files concise — prefer bullet points over prose
+- Do NOT delete old session logs or decisions — they are the project history
+
+## Codex CLI - Code REVIEW
+
+After builds, run Codex for a second opinion:
+
+codex exec --sandbox read-only \
+"Review for bugs and logic errors"
 
 ## Reference Files (read before implementing)
 
-- **CHATSERVER.md** — Master spec: phases, tasks, security priorities, Windows-specific details.
-- **PROTOCOL.md** — WebSocket message format. Every message type, payload shape, and rate limit. Server and client must agree on this exactly.
-- **SCHEMA.md** — SQLite table definitions, indexes, FTS5 setup, permission bitfield definitions. Use these exact definitions.
-- **API.md** — REST endpoints, request/response shapes, error codes.
-- **SETUP.md** — What tooling is installed and what Claude Code should install.
+All specs live in `docs/brain/06-Specs/`:
+
+- **CHATSERVER.md** -- Master spec: phases, tasks, security
+  priorities, Windows-specific details.
+- **PROTOCOL.md** -- WebSocket message format. Every message
+  type, payload shape, and rate limit. Server and client
+  must agree on this exactly.
+- **SCHEMA.md** -- SQLite table definitions, indexes, FTS5
+  setup, permission bitfield definitions.
+- **API.md** -- REST endpoints, request/response shapes,
+  error codes. All paths start with `/api/v1/`.
+- **SETUP.md** -- Tooling requirements for both server and
+  client development.
+- **CLIENT-ARCHITECTURE.md** -- Tauri v2 client project
+  structure, component map, store design, and conventions.
+- **TESTING-STRATEGY.md** -- Test infrastructure, coverage
+  targets, and patterns for every test type.
 
 ## Project Structure
 
-```
+```text
 OwnCord/
-├── Server/              ← Go server (chatserver.exe) — not yet created
-├── Client/              ← Native Windows client — not yet created
-└── docs/                ← Quick-start, port-forwarding, Tailscale guides
+├── Server/                  # Go server (implemented)
+│   ├── config/
+│   ├── db/
+│   ├── auth/
+│   ├── api/
+│   ├── ws/
+│   ├── admin/static/
+│   └── migrations/
+├── Client/
+│   ├── tauri-client/        # Tauri v2 client
+│   │   ├── src-tauri/       #   Rust backend
+│   │   │   └── src/
+│   │   ├── src/             #   TypeScript frontend
+│   │   │   ├── lib/         #     Core services
+│   │   │   ├── stores/      #     Reactive state
+│   │   │   ├── components/  #     UI components
+│   │   │   ├── pages/       #     Page layouts
+│   │   │   └── styles/      #     CSS (from mockups)
+│   │   └── tests/
+│   │       ├── unit/
+│   │       ├── integration/
+│   │       └── e2e/
+│   └── ui-mockup.html      # Design source of truth
+└── docs/
 ```
-
-When scaffolding the server, create packages under `Server/`: `config/`, `db/`, `auth/`, `api/`, `ws/`, `voice/`, `storage/`, `admin/static/`, `migrations/`.
 
 ## Build Commands
 
-### Server
+### Server (Go)
+
 ```bash
 cd Server
 go build -o chatserver.exe -ldflags "-s -w -X main.version=1.0.0" .
-
-# Cross-compile for Windows from another OS
-GOOS=windows GOARCH=amd64 go build -o chatserver.exe -ldflags "-s -w -X main.version=1.0.0" .
-```
-
-### Dev Tools (Claude Code installs these)
-```bash
-# Hot reload during development
-go install github.com/air-verse/air@latest
-air  # from Server/ directory
-
-# Linter
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-golangci-lint run ./...
-
-# SQL code generator (optional)
-go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-```
-
-### Tests
-```bash
-cd Server
 go test ./...                        # all tests
-go test ./auth/... -v                # single package, verbose
-go test ./... -run TestFunctionName  # single test
 go test ./... -cover                 # with coverage
 ```
 
-## Phase Order
+### Client (Tauri v2)
 
-Build in the order listed in CHATSERVER.md:
-1. Protocol & Server Core
-2. Auth & Security
-3. Client Core UI
-4. Real-Time Chat Features
-5. Voice & Video
-6. Admin Panel
-7. Distribution & Updates
+```bash
+cd Client/tauri-client
 
-Phases 1–2 (server) and Phase 3 (client UI shell) can be worked on in parallel once the protocol is defined.
+# Development (hot reload)
+npm run tauri dev
 
-## Server Conventions (Go)
+# Build release
+npm run tauri build
 
-- Use standard library where possible. Minimize dependencies.
-- Router: `chi`. SQLite: `modernc.org/sqlite` (pure Go, no CGO). WebSocket: `nhooyr.io/websocket`. WebRTC: `pion/webrtc` + `pion/turn`.
-- Config via `config.yaml` loaded at startup; environment variable overrides for Docker.
-- Structured logging via `log/slog`.
-- Errors returned as JSON `{ "error": "CODE", "message": "detail" }`.
-- All user input sanitized server-side with `bluemonday` before storage and broadcast.
-- Passwords hashed with bcrypt cost 12+. Sessions are server-side tokens in SQLite — not JWTs.
-- Every API handler and WebSocket event checks permissions using the bitfield system defined in SCHEMA.md.
-- File uploads: validate magic bytes, reject executables, strip EXIF, store with UUID filename.
-- Embed admin panel static files with `//go:embed admin/static`.
-- Target: `GOOS=windows GOARCH=amd64`.
+# Run tests
+npm test                             # all tests (vitest)
+npm run test:unit                    # unit tests only
+npm run test:integration             # integration tests
+npm run test:e2e                     # Playwright E2E tests
+npm run test:coverage                # with coverage report
+```
 
-## Client Conventions
+### Dev Tools
 
-- Native Windows desktop app. No Electron. No browser engine. ~20–40MB install, ~50–100MB idle RAM.
-- Store auth tokens in Windows Credential Manager (DPAPI).
-- Windows-native APIs: `SetWindowsHookEx` (push-to-talk), WASAPI (audio), DXGI (screen capture), Toast notifications.
-- WebSocket for real-time + REST for history/uploads. Follow PROTOCOL.md exactly.
-- Support multiple server profiles (like TeamSpeak bookmarks).
-- Installer via NSIS or WiX. Register `chatserver://` protocol handler.
+```bash
+# Server
+go install github.com/air-verse/air@latest
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
-## Security Rules
+# Client (installed via npm)
+# vitest, playwright, typescript, vite — all in package.json
+```
 
-- Never trust client input — all validation server-side.
-- Never log passwords, tokens, or message content in plaintext.
-- Never expose the upload directory directly — always serve through auth middleware.
-- Never reveal whether a username exists on failed login — generic error only.
-- Rate limit everything: logins, messages, uploads, API calls.
-- All WebSocket connections must authenticate before receiving any data.
-- TLS on by default (self-signed cert generated on first run).
-- Invite-only registration — no open signup endpoint.
+## Branch Strategy
+
+- `main` -- stable releases
+- `dev` -- active development
+
+## Critical Rules (always apply)
+
+- **API paths**: Always `/api/v1/*` (matches server router)
+- **WS field names**: `threshold_mode` NOT `mode` in
+  VoiceConfig and VoiceSpeakers payloads
+- **Roles**: Always use role NAME strings ("admin",
+  "member"), never numeric role\_id in UI-facing code
+- **Rate limiting**: Client must respect PROTOCOL.md
+  limits (typing 1/3s, presence 1/10s, voice 20/s)
+- **Status values**: Only `online`, `idle`, `dnd`,
+  `offline`. Never `invisible`.
+
+## Conventions & Details (see canonical files in docs/brain/)
+
+- **Client architecture & conventions**:
+  06-Specs/CLIENT-ARCHITECTURE.md
+- **Server spec & conventions**: 06-Specs/CHATSERVER.md
+- **Security rules**: 06-Specs/CHATSERVER.md (Security section)
+- **Testing requirements**: 06-Specs/TESTING-STRATEGY.md
+- **Coverage target**: 80%+ (TDD: RED → GREEN → IMPROVE)
+
+## gstack Skills
+
+gstack is installed at `~/.claude/skills/gstack`.
+
+- **Web browsing**: Always use `/browse` from gstack for
+  all web browsing. Never use `mcp__claude-in-chrome__*`
+  tools.
+
+Available skills:
+
+- `/plan-ceo-review` — CEO-level plan review
+- `/plan-eng-review` — Engineering plan review
+- `/review` — Code review
+- `/ship` — Ship checklist
+- `/browse` — Headless browser for QA and browsing
+- `/qa` — QA testing
+- `/qa-only` — QA testing (no fixes)
+- `/setup-browser-cookies` — Configure browser cookies
+- `/retro` — Retrospective
+- `/document-release` — Document a release

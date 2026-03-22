@@ -147,7 +147,7 @@ OwnCord/
 
 ```bash
 cd Server
-go build -o chatserver.exe -ldflags "-s -w -X main.version=1.0.0" .
+go build -o chatserver.exe -ldflags "-s -w -X main.version=1.3.0" .
 go test ./...                        # all tests
 go test ./... -cover                 # with coverage
 ```

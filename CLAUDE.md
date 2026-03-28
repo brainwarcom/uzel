@@ -96,6 +96,15 @@ All specs live in `docs/brain/06-Specs/`:
   structure, component map, store design, and conventions.
 - **TESTING-STRATEGY.md** -- Test infrastructure, coverage
   targets, and patterns for every test type.
+- **E2E-BEST-PRACTICES.md** -- E2E test patterns: persistent
+  fixtures, login-once, selector/assertion best practices.
+- **DM-SYSTEM.md** -- Direct message system architecture,
+  server/client flows, authorization model.
+- **THEME-SYSTEM.md** -- Theming system: built-in themes,
+  custom JSON import/export, accent color, CSS injection
+  prevention.
+- **RECONNECTION.md** -- Reconnection protocol: seq numbers,
+  ring buffer replay, state recovery flow.
 - **protocol-schema.json** -- Machine-readable schema for all
   36 WebSocket message types with field definitions. Located
   at `docs/protocol-schema.json`.

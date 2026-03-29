@@ -311,6 +311,14 @@ go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
   sidebar navigation, 80vh height). Tabs: Account, Appearance,
   Notifications, Text & Images, Accessibility, Voice & Audio,
   Keybinds, Advanced, Logs.
+- **Two-factor authentication (TOTP)**: 2FA protection with TOTP
+  enrollment/disable in Settings > Account. Server: 10-minute auth
+  challenges with 5-attempt rate limiting per challenge, 10 req/min
+  per IP. Client: QR code display, backup code backup, password
+  confirmation. Server-wide `require_2fa` policy enforcement. Login
+  flow returns `requires_2fa: true` + `partial_token` (10min TTL) on
+  second-factor challenge; client shows TOTP overlay. Partial tokens
+  expire on successful 2FA completion and on logout.
 - **Observability & debugging**: Structured logging across all
   layers. Server: enriched HTTP request logs (client_ip, req_id,
   bytes), WS disconnect stats (duration, msgs sent/received/dropped,

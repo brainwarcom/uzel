@@ -214,7 +214,7 @@ OwnCord/
 
 ```bash
 cd Server
-go build -o chatserver.exe -ldflags "-s -w -X main.version=1.3.0" .
+go build -o chatserver.exe -ldflags "-s -w -X main.version=1.0.0" .
 go test ./...                        # all tests
 go test ./... -cover                 # with coverage
 ```
@@ -276,7 +276,10 @@ go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
   `chatserver.exe`. Client connects via `livekitSession.ts`
   (facade pattern delegating to `audioPipeline.ts`,
   `audioElements.ts`, `deviceManager.ts`). VideoGrid
-  component replaces chat area when cameras are active.
+  component replaces chat area when cameras are active
+  with Discord-style fixed 16:9 aspect ratio tiles.
+  Sidebar stream preview: hover voice channel to see
+  live video thumbnail of active screenshares.
   VAD runs on AudioWorklet (`public/vad-worklet.js`) with
   setTimeout fallback. Token TTL: 24h (refresh at 23h).
   Ghost state cleanup: retry with exponential backoff.
@@ -376,6 +379,12 @@ go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
   flow returns `requires_2fa: true` + `partial_token` (10min TTL) on
   second-factor challenge; client shows TOTP overlay. Partial tokens
   expire on successful 2FA completion and on logout.
+- **Account deletion**: `DELETE /api/v1/auth/account` with
+  password confirmation. Anonymizes user (username →
+  `[deleted-{id}]`, clears password/avatar/TOTP, bans row).
+  Soft-deletes messages, removes sessions/DM participation/
+  reactions/read states. Blocks last-admin deletion. Client:
+  "Danger Zone" section in AccountTab with inline confirmation.
 - **Observability & debugging**: Structured logging across all
   layers. Server: enriched HTTP request logs (client_ip, req_id,
   bytes), WS disconnect stats (duration, msgs sent/received/dropped,

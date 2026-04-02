@@ -15,6 +15,8 @@ import { createLogger } from "@lib/logger";
 import { createRNNoiseProcessor } from "@lib/noise-suppression";
 
 const log = createLogger("audioPipeline");
+/** Keep VAD threshold conservative so normal speech is not accidentally gated. */
+const MAX_VAD_THRESHOLD = 0.022;
 
 export class AudioPipeline {
   private room: Room | null = null;
@@ -228,7 +230,9 @@ export class AudioPipeline {
     const sensitivity = loadPref<number>("voiceSensitivity", 50);
     if (sensitivity >= 100) return;
 
-    const threshold = ((100 - sensitivity) / 100) * 0.10;
+    // Old mapping was too aggressive (up to 0.10) and could keep users gated.
+    // New mapping caps at a much lower threshold to avoid "I'm connected but unheard".
+    const threshold = ((100 - sensitivity) / 100) * MAX_VAD_THRESHOLD;
 
     // Try AudioWorklet first
     this.audioPipelineCtx.audioWorklet.addModule("/vad-worklet.js").then(() => {
@@ -288,8 +292,9 @@ export class AudioPipeline {
     const dataArray = new Float32Array(analyser.fftSize);
     let silentFrames = 0;
     let speechFrames = 0;
-    const GATE_ON_FRAMES = 12;
-    const GATE_OFF_FRAMES = 2;
+    // Be slower to mute and faster to unmute for better real-time voice UX.
+    const GATE_ON_FRAMES = 18;
+    const GATE_OFF_FRAMES = 1;
     let startupFrames = 0;
     const STARTUP_GRACE = 30;
     let frameCounter = 0;

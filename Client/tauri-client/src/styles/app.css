@@ -121,12 +121,15 @@
 }
 
 /* Voice users nested in sidebar */
-.voice-users-list { padding: 2px 0 4px 36px; }
+.voice-users-list { padding: 2px 0 4px 36px; overflow-x: hidden; }
 .voice-user-item {
   display: flex; align-items: center; gap: 6px;
   padding: 3px 8px; border-radius: var(--radius-sm);
   cursor: pointer; font-size: 13px; color: var(--text-muted);
   overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 .voice-user-item .vu-name {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
@@ -2211,11 +2214,14 @@
 .channel-item .ch-name { font-size: 15px; }
 .channel-item .ch-icon { width: 22px; }
 
-.voice-users-list { padding: 4px 0 6px 38px; }
+.voice-users-list { padding: 4px 0 6px 38px; overflow-x: hidden; }
 .voice-user-item {
   font-size: 14px;
   padding: 6px 8px;
   border-radius: var(--radius-md);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 .voice-user-item .vu-avatar {
   width: 24px;

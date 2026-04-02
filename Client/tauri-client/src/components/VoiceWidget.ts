@@ -76,6 +76,7 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
 
   // Elapsed timer
   let timerEl: HTMLSpanElement | null = null;
+  let micStateEl: HTMLSpanElement | null = null;
   let timerInterval: ReturnType<typeof setInterval> | null = null;
 
   // Stats pane field elements (set during mount)
@@ -195,10 +196,30 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
     cameraBtn?.classList.toggle("active-ctrl", voice.localCamera);
 
     if (muteBtn) { swapIcon(muteBtn, voice.localMuted ? "mic-off" : "mic"); muteBtn.setAttribute("aria-pressed", String(voice.localMuted)); }
+    if (muteBtn) {
+      const nextAction = voice.localMuted ? "Включить микрофон" : "Выключить микрофон";
+      muteBtn.setAttribute("aria-label", nextAction);
+      muteBtn.setAttribute("title", nextAction);
+    }
     if (deafenBtn) { swapIcon(deafenBtn, voice.localDeafened ? "headphones-off" : "headphones"); deafenBtn.setAttribute("aria-pressed", String(voice.localDeafened)); }
+    if (deafenBtn) {
+      const nextAction = voice.localDeafened ? "Включить наушники" : "Выключить звук в наушниках";
+      deafenBtn.setAttribute("aria-label", nextAction);
+      deafenBtn.setAttribute("title", nextAction);
+    }
     if (cameraBtn) { swapIcon(cameraBtn, voice.localCamera ? "camera-off" : "camera"); cameraBtn.setAttribute("aria-pressed", String(voice.localCamera)); }
     shareBtn?.classList.toggle("active-ctrl", voice.localScreenshare);
     if (shareBtn) { swapIcon(shareBtn, voice.localScreenshare ? "monitor-off" : "monitor"); shareBtn.setAttribute("aria-pressed", String(voice.localScreenshare)); }
+
+    if (micStateEl) {
+      if (voice.localMuted || voice.localDeafened) {
+        setText(micStateEl, "микрофон выкл");
+        micStateEl.style.color = "var(--red)";
+      } else {
+        setText(micStateEl, "микрофон вкл");
+        micStateEl.style.color = "var(--green)";
+      }
+    }
 
     // Show/hide "Grant Microphone" button based on listen-only state
     if (grantMicBtn) {
@@ -229,6 +250,7 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
     const connLabel = createElement("span", { class: "vw-connected" }, "Голос подключен");
     timerEl = createElement("span", { class: "vw-timer" }, "00:00");
     channelNameEl = createElement("span", { class: "vw-channel" }, "Голосовой канал");
+    micStateEl = createElement("span", { class: "vw-mic-state" }, "микрофон вкл");
 
     signalWrap = createElement("div", { class: "vw-signal", "aria-label": "Качество соединения" });
     signalWrap.appendChild(createSignalIcon(4, QUALITY_COLORS.excellent, 14));
@@ -239,7 +261,7 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
       statsPane?.classList.toggle("visible");
     }, { signal: ac.signal });
 
-    appendChildren(header, connLabel, timerEl, channelNameEl, signalWrap);
+    appendChildren(header, connLabel, timerEl, channelNameEl, micStateEl, signalWrap);
 
     // Expanded stats pane (hidden by default)
     statsPane = createElement("div", { class: "vw-stats" });
@@ -372,6 +394,7 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
     signalWrap = null;
     pingLabel = null;
     timerEl = null;
+    micStateEl = null;
     statsPane = null;
     outRateEl = null;
     outPacketsEl = null;

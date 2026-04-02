@@ -1,6 +1,6 @@
 {
   "productName": "Uzel",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "identifier": "com.uzel.client",
   "build": {
     "frontendDist": "../dist",

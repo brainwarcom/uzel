@@ -1053,13 +1053,24 @@ export function createChannelSidebar(options: ChannelSidebarOptions): MountableC
 
       // Patch speaking state in-place — toggle CSS class without re-rendering.
       if (channelList === null) return;
+      let missingVoiceRow = false;
       for (const [, users] of state.voiceUsers) {
         for (const [uid, u] of users) {
           const row = channelList.querySelector<HTMLElement>(`.voice-user-item[data-voice-uid="${uid}"]`);
-          if (row !== null) {
-            row.classList.toggle("speaking", u.speaking);
+          if (row === null) {
+            missingVoiceRow = true;
+            break;
           }
+          row.classList.toggle("speaking", u.speaking);
         }
+        if (missingVoiceRow) {
+          break;
+        }
+      }
+      // Safety net: if any expected voice user row is missing in DOM,
+      // force a full sidebar rerender to recover from desync.
+      if (missingVoiceRow) {
+        renderChannels();
       }
     });
     unsubscribers.push(unsubVoice);

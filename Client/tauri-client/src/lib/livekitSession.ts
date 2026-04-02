@@ -775,19 +775,52 @@ export class LiveKitSession {
    *  the audio pipeline. Re-publish and rebuild when unmuting. This guarantees
    *  the SFU has no audio track to forward to other participants. */
   private async applyMicMuteState(muted: boolean): Promise<void> {
-    if (this.room === null) return;
-    if (muted) {
-      // Tear down pipeline first so it doesn't hold refs to the track
-      this._audioPipeline.teardownAudioPipeline();
-      // Fully disable the mic — this unpublishes the track from the SFU
-      await this.room.localParticipant.setMicrophoneEnabled(false);
-      log.debug("Mic fully unpublished (muted)");
-    } else {
-      // Re-enable mic — this re-publishes the track to the SFU
-      await this.room.localParticipant.setMicrophoneEnabled(true);
-      // Rebuild the audio pipeline on the fresh track
+    const room = this.room;
+    if (room === null) return;
+    try {
+      if (muted) {
+        // Tear down pipeline first so it doesn't hold refs to the track
+        this._audioPipeline.teardownAudioPipeline();
+        // Fully disable the mic — this unpublishes the track from the SFU
+        await room.localParticipant.setMicrophoneEnabled(false);
+        log.debug("Mic fully unpublished (muted)");
+      } else {
+        // Re-enable mic — this re-publishes the track to the SFU
+        await room.localParticipant.setMicrophoneEnabled(true);
+        // Rebuild the audio pipeline on the fresh track
+        this._audioPipeline.setupAudioPipeline();
+        log.debug("Mic re-published (unmuted)");
+      }
+    } catch (err) {
+      const errorText = String(err ?? "");
+      const rnnoiseRecoverable = !muted
+        && (errorText.includes("RNNoise") || errorText.includes("AudioContext"));
+      if (!rnnoiseRecoverable) throw err;
+
+      // Recovery path: temporarily disable enhanced NS and force mic re-publish.
+      // This prevents "mic is enabled in UI but nobody hears me" after processor errors.
+      log.warn("Mic unmute failed due RNNoise, trying safe fallback", err);
+      try {
+        await this._audioPipeline.removeNoiseSuppressor();
+      } catch (removeErr) {
+        log.debug("Failed to remove RNNoise during fallback (non-fatal)", removeErr);
+      }
+
+      try {
+        await room.localParticipant.setMicrophoneEnabled(false);
+      } catch (disableErr) {
+        log.debug("Mic disable during RNNoise fallback failed (non-fatal)", disableErr);
+      }
+      await room.localParticipant.setMicrophoneEnabled(true);
       this._audioPipeline.setupAudioPipeline();
-      log.debug("Mic re-published (unmuted)");
+      log.info("Mic recovered after RNNoise fallback");
+
+      // If user wants enhanced NS, try to re-attach it non-blocking.
+      if (loadPref<boolean>("enhancedNoiseSuppression", false)) {
+        void this._audioPipeline.applyNoiseSuppressor().catch((reapplyErr) => {
+          log.warn("Failed to re-attach RNNoise after fallback", reapplyErr);
+        });
+      }
     }
   }
 

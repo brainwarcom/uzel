@@ -34,6 +34,8 @@ interface RNNoiseModule {
 }
 
 let cachedModule: RNNoiseModule | null = null;
+/** If AudioWorklet RNNoise failed once, skip further worklet attempts in this session. */
+let disableWorkletPath = false;
 
 async function loadRNNoise(): Promise<RNNoiseModule> {
   if (cachedModule !== null) return cachedModule;
@@ -250,18 +252,25 @@ export function createRNNoiseProcessor(): TrackProcessor<Track.Kind.Audio, Audio
     name: "rnnoise",
 
     async init(opts: AudioProcessorOptions): Promise<void> {
-      log.debug("RNNoise processor init", { audioWorkletSupported: supportsAudioWorklet() });
+      log.debug("RNNoise processor init", {
+        audioWorkletSupported: supportsAudioWorklet(),
+        workletDisabled: disableWorkletPath,
+      });
       const ctx = opts.audioContext;
       if (ctx === null || ctx === undefined) {
-        throw new Error("RNNoise init failed: missing AudioContext");
+        // LiveKit may call processor restart without an audioContext during
+        // transient track/device operations. Do not fail hard here.
+        log.warn("RNNoise init skipped: missing AudioContext");
+        return;
       }
 
-      if (supportsAudioWorklet()) {
+      if (supportsAudioWorklet() && !disableWorkletPath) {
         try {
           pipeline = await createWorkletPipeline(opts.track, ctx);
           return;
         } catch (err) {
           log.warn("AudioWorklet failed, falling back to ScriptProcessorNode", err);
+          disableWorkletPath = true;
         }
       }
 
@@ -270,6 +279,12 @@ export function createRNNoiseProcessor(): TrackProcessor<Track.Kind.Audio, Audio
 
     async restart(opts: AudioProcessorOptions): Promise<void> {
       log.debug("RNNoise processor restart");
+      if (opts.audioContext === null || opts.audioContext === undefined) {
+        // Keep currently working pipeline (if any) instead of tearing it down.
+        // This prevents false "device unavailable" errors during LiveKit internals.
+        log.warn("RNNoise restart skipped: missing AudioContext");
+        return;
+      }
       if (pipeline !== null) {
         pipeline.destroy();
         pipeline = null;

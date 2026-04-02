@@ -5,7 +5,7 @@
 
 import { createElement, appendChildren } from "@lib/dom";
 import { createIcon } from "@lib/icons";
-import { muteScreenshareAudio, setUserVolume } from "@lib/livekitSession";
+import { disableScreenshare, muteScreenshareAudio, setUserVolume } from "@lib/livekitSession";
 import type { MountableComponent } from "@lib/safe-render";
 
 export interface TileConfig {
@@ -240,80 +240,124 @@ export function createVideoGrid(): VideoGridComponent {
     appendChildren(cell, video, label);
 
     cell.addEventListener("click", (e) => {
-      // Don't switch focus if clicking the mute button
-      if ((e.target as Element).closest(".tile-mute-btn")) return;
+      // Don't switch focus if clicking tile controls.
+      if ((e.target as Element).closest(".video-tile-overlay")) return;
       if (focusedTileId !== null && focusedTileId !== userId) {
         focusedTileId = userId;
         rebuildFocusLayout();
       }
     });
 
-    // Add audio control overlay for remote tiles
-    if (config !== undefined && !config.isSelf) {
-      let muted = false;
-      let currentVolume = 100;
-
+    if (config !== undefined) {
       const overlay = createElement("div", { class: "video-tile-overlay" });
+      let hasOverlayControls = false;
 
-      // Volume slider
-      const volumeSlider = createElement("input", {
-        type: "range",
-        min: "0",
-        max: "200",
-        value: "100",
-        class: "tile-volume-slider",
-        "aria-label": "Volume",
-      });
-
-      volumeSlider.addEventListener("input", () => {
-        currentVolume = Number(volumeSlider.value);
-        const wasMuted = muted;
-        muted = currentVolume === 0;
-        if (config.isScreenshare) {
-          muteScreenshareAudio(config.audioUserId, muted);
-        } else {
-          setUserVolume(config.audioUserId, currentVolume);
-        }
-        setButtonIcon(muteBtn, muted ? volumeXIcon() : volumeIcon());
-        muteBtn.setAttribute("aria-label", muted ? "Включить звук" : "Выключить звук");
-        if (muted !== wasMuted) {
-          overlay.classList.toggle("muted", muted);
-        }
-      });
-
-      // Mute button
-      const muteBtn = createElement("button", {
-        class: "tile-mute-btn",
-        "aria-label": "Выключить звук",
-      });
-      muteBtn.appendChild(volumeIcon());
-
-      muteBtn.addEventListener("click", () => {
-        muted = !muted;
-        if (muted) {
-          if (config.isScreenshare) {
-            muteScreenshareAudio(config.audioUserId, true);
-          } else {
-            setUserVolume(config.audioUserId, 0);
+      // Screenshare controls: fullscreen for everyone + stop share for self.
+      if (config.isScreenshare) {
+        hasOverlayControls = true;
+        const fullscreenBtn = createElement("button", {
+          class: "tile-action-btn",
+          "aria-label": "Открыть на весь экран",
+          title: "Открыть на весь экран",
+        });
+        fullscreenBtn.appendChild(createIcon("external-link", 16));
+        fullscreenBtn.addEventListener("click", async () => {
+          try {
+            if (document.fullscreenElement === cell) {
+              await document.exitFullscreen();
+              return;
+            }
+            await cell.requestFullscreen();
+          } catch {
+            // ignore fullscreen errors (user denied or unsupported)
           }
-          volumeSlider.value = "0";
-        } else {
-          if (currentVolume === 0) currentVolume = 100;
+        });
+        overlay.appendChild(fullscreenBtn);
+
+        if (config.isSelf) {
+          const stopShareBtn = createElement("button", {
+            class: "tile-action-btn tile-action-btn-danger",
+            "aria-label": "Остановить демонстрацию",
+            title: "Остановить демонстрацию",
+          });
+          stopShareBtn.appendChild(createIcon("monitor-off", 16));
+          stopShareBtn.addEventListener("click", () => {
+            void disableScreenshare();
+          });
+          overlay.appendChild(stopShareBtn);
+        }
+      }
+
+      // Audio controls for remote tiles (including remote screenshare tiles).
+      if (!config.isSelf) {
+        let muted = false;
+        let currentVolume = 100;
+        hasOverlayControls = true;
+
+        // Volume slider
+        const volumeSlider = createElement("input", {
+          type: "range",
+          min: "0",
+          max: "200",
+          value: "100",
+          class: "tile-volume-slider",
+          "aria-label": "Громкость",
+        });
+
+        volumeSlider.addEventListener("input", () => {
+          currentVolume = Number(volumeSlider.value);
+          const wasMuted = muted;
+          muted = currentVolume === 0;
           if (config.isScreenshare) {
-            muteScreenshareAudio(config.audioUserId, false);
+            muteScreenshareAudio(config.audioUserId, muted);
           } else {
             setUserVolume(config.audioUserId, currentVolume);
           }
-          volumeSlider.value = String(currentVolume);
-        }
-        setButtonIcon(muteBtn, muted ? volumeXIcon() : volumeIcon());
-        muteBtn.setAttribute("aria-label", muted ? "Включить звук" : "Выключить звук");
-        overlay.classList.toggle("muted", muted);
-      });
+          setButtonIcon(muteBtn, muted ? volumeXIcon() : volumeIcon());
+          muteBtn.setAttribute("aria-label", muted ? "Включить звук" : "Выключить звук");
+          if (muted !== wasMuted) {
+            overlay.classList.toggle("muted", muted);
+          }
+        });
 
-      overlay.appendChild(volumeSlider);
-      overlay.appendChild(muteBtn);
-      cell.appendChild(overlay);
+        // Mute button
+        const muteBtn = createElement("button", {
+          class: "tile-mute-btn",
+          "aria-label": "Выключить звук",
+          title: "Выключить звук",
+        });
+        muteBtn.appendChild(volumeIcon());
+
+        muteBtn.addEventListener("click", () => {
+          muted = !muted;
+          if (muted) {
+            if (config.isScreenshare) {
+              muteScreenshareAudio(config.audioUserId, true);
+            } else {
+              setUserVolume(config.audioUserId, 0);
+            }
+            volumeSlider.value = "0";
+          } else {
+            if (currentVolume === 0) currentVolume = 100;
+            if (config.isScreenshare) {
+              muteScreenshareAudio(config.audioUserId, false);
+            } else {
+              setUserVolume(config.audioUserId, currentVolume);
+            }
+            volumeSlider.value = String(currentVolume);
+          }
+          setButtonIcon(muteBtn, muted ? volumeXIcon() : volumeIcon());
+          muteBtn.setAttribute("aria-label", muted ? "Включить звук" : "Выключить звук");
+          overlay.classList.toggle("muted", muted);
+        });
+
+        overlay.appendChild(volumeSlider);
+        overlay.appendChild(muteBtn);
+      }
+
+      if (hasOverlayControls) {
+        cell.appendChild(overlay);
+      }
     }
 
     cells.set(userId, { el: cell, config, kind: "stream" });

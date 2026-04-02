@@ -2197,11 +2197,11 @@
   bottom: 8px;
   left: 8px;
   color: #fff;
-  font-size: 19px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
   line-height: 1.2;
-  padding: 6px 10px;
+  padding: 4px 8px;
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.58);
 }
@@ -2307,17 +2307,18 @@
   height: 100%;
 }
 
-/* In focus mode keep controls always visible and centered for easier access. */
+/* In focus mode keep controls always visible in the top-right corner. */
 .video-grid.focus-mode .video-focus-main .video-tile-overlay {
-  left: 50%;
-  right: auto;
-  transform: translateX(-50%);
-  bottom: 14px;
-  padding: 10px 12px;
+  top: 12px;
+  right: 12px;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  padding: 8px 10px;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(6px);
-  gap: 10px;
+  gap: 8px;
   opacity: 1;
 }
 .video-focus-strip {

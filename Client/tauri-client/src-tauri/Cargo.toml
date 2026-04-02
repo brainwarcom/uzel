@@ -1,6 +1,6 @@
 [package]
 name = "uzel"
-version = "1.0.10"
+version = "1.0.11"
 edition = "2021"
 description = "Uzel Desktop Client"
 

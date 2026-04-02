@@ -27,7 +27,7 @@ async function getInvoke(): Promise<
 
 /**
  * Save a credential to Windows Credential Manager.
- * Target: OwnCord/{host}
+ * Target: Uzel/{host}
  */
 export async function saveCredential(
   host: string,

@@ -19,6 +19,8 @@ import {
   enableScreenshare,
   disableScreenshare,
 } from "@lib/livekitSession";
+import { loadPref } from "@components/settings/helpers";
+import { playVoiceJoinSound, playVoiceLeaveSound } from "@lib/sounds";
 
 const log = createLogger("voice-callbacks");
 
@@ -56,6 +58,9 @@ export function createVoiceWidgetCallbacks(
     onDisconnect: () => {
       if (voiceStore.getState().currentChannelId === null) return;
       log.info("Leaving voice channel (widget disconnect)");
+      if (loadPref<boolean>("notificationSounds", true)) {
+        playVoiceLeaveSound();
+      }
       voiceSessionLeave(false);
       leaveVoiceChannel();
       ws.send({ type: "voice_leave", payload: {} });
@@ -127,11 +132,17 @@ export function createSidebarVoiceCallbacks(ws: WsClient): SidebarVoiceCallbacks
   return {
     onVoiceJoin: (channelId: number) => {
       log.info("Joining voice channel", { channelId });
+      if (loadPref<boolean>("notificationSounds", true)) {
+        playVoiceJoinSound();
+      }
       joinVoiceChannel(channelId);
       ws.send({ type: "voice_join", payload: { channel_id: channelId } });
     },
     onVoiceLeave: () => {
       log.info("Leaving voice channel");
+      if (loadPref<boolean>("notificationSounds", true)) {
+        playVoiceLeaveSound();
+      }
       voiceSessionLeave(false);
       leaveVoiceChannel();
       ws.send({ type: "voice_leave", payload: {} });

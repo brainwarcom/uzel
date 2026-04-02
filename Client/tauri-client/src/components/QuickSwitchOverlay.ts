@@ -93,7 +93,7 @@ export function createQuickSwitchOverlay(options: QuickSwitchOverlayOptions): Mo
     const addIcon = createElement("div", { class: "quick-switch-icon add" }, "+");
     const addInfo = createElement("div", { class: "quick-switch-info" });
     const addName = createElement("div", { class: "quick-switch-name" }, "Add new server");
-    const addHost = createElement("div", { class: "quick-switch-host" }, "Connect to another OwnCord server");
+    const addHost = createElement("div", { class: "quick-switch-host" }, "Connect to another Uzel server");
     appendChildren(addInfo, addName, addHost);
     appendChildren(addItem, addIcon, addInfo);
     addItem.addEventListener("click", () => options.onAddServer(), { signal: ac.signal });

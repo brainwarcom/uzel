@@ -460,4 +460,4 @@ void initWindowState();
 // Initialize log persistence to disk (fire-and-forget)
 void initLogPersistence();
 
-log.info("OwnCord client initialized");
+log.info("Uzel client initialized");

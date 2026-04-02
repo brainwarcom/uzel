@@ -28,7 +28,7 @@ impl std::fmt::Debug for CredentialData {
 
 /// Build the target name used in Windows Credential Manager.
 fn target_name(host: &str) -> Vec<u16> {
-    let name = format!("OwnCord/{host}");
+    let name = format!("Uzel/{host}");
     name.encode_utf16().chain(std::iter::once(0)).collect()
 }
 
@@ -44,7 +44,7 @@ fn to_wide(s: &str) -> Vec<u16> {
 /// Save a credential (username + token + optional password) to Windows
 /// Credential Manager.
 ///
-/// Target name: `OwnCord/{host}`
+/// Target name: `Uzel/{host}`
 /// Blob: JSON `{"username":"...","token":"...","password":"..."}`
 ///
 /// The password field is only included when the user checks "Remember
@@ -207,7 +207,7 @@ mod tests {
     #[test]
     fn target_name_encodes_host_as_utf16() {
         let result = target_name("localhost:8443");
-        let expected: Vec<u16> = "OwnCord/localhost:8443"
+        let expected: Vec<u16> = "Uzel/localhost:8443"
             .encode_utf16()
             .chain(std::iter::once(0))
             .collect();
@@ -217,7 +217,7 @@ mod tests {
     #[test]
     fn target_name_empty_host() {
         let result = target_name("");
-        let expected: Vec<u16> = "OwnCord/"
+        let expected: Vec<u16> = "Uzel/"
             .encode_utf16()
             .chain(std::iter::once(0))
             .collect();

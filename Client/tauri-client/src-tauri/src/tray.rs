@@ -43,7 +43,7 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<(), tauri::E
     TrayIconBuilder::new()
         .icon(app.default_window_icon().cloned().unwrap_or_else(|| tauri::image::Image::new(&[], 1, 1)))
         .menu(&menu)
-        .tooltip("OwnCord")
+        .tooltip("Uzel")
         .on_tray_icon_event(move |_tray, event| {
             if let TrayIconEvent::Click {
                 button: MouseButton::Left,

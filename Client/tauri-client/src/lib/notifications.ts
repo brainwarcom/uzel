@@ -8,6 +8,7 @@ import { authStore } from "@stores/auth.store";
 import { channelsStore } from "@stores/channels.store";
 import type { ChatMessagePayload } from "./types";
 import { createLogger } from "./logger";
+import { playMessageSound } from "./sounds";
 
 const log = createLogger("notifications");
 
@@ -42,7 +43,13 @@ export function notifyIncomingMessage(payload: ChatMessagePayload): void {
   // Don't notify for own messages
   if (currentUser !== null && payload.user.id === currentUser.id) return;
 
-  // Don't notify if the window is focused AND the message is in the active channel
+  // Always allow chat sound for incoming messages (if enabled), even when the
+  // user is focused in the same channel.
+  if (loadPref<boolean>("notificationSounds", true)) {
+    playNotificationSound();
+  }
+
+  // Skip desktop notification/taskbar flash if focused in active channel.
   const activeChannelId = channelsStore.getState().activeChannelId;
   if (isWindowFocused() && payload.channel_id === activeChannelId) return;
 
@@ -67,10 +74,6 @@ export function notifyIncomingMessage(payload: ChatMessagePayload): void {
     flashTaskbar();
   }
 
-  // Notification sound
-  if (loadPref<boolean>("notificationSounds", true)) {
-    playNotificationSound();
-  }
 }
 
 /** Fire a Tauri desktop notification. Falls back to Web Notification API. */
@@ -126,22 +129,8 @@ let notifAudioCtx: AudioContext | null = null;
 /** Play a brief notification chime. */
 function playNotificationSound(): void {
   try {
-    if (notifAudioCtx === null) {
-      notifAudioCtx = new AudioContext();
-    }
-    const ctx = notifAudioCtx;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.frequency.setValueAtTime(800, ctx.currentTime);
-    osc.frequency.setValueAtTime(600, ctx.currentTime + 0.1);
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.2);
+    if (notifAudioCtx === null) notifAudioCtx = new AudioContext();
+    playMessageSound();
   } catch {
     log.debug("Notification sound not available");
   }

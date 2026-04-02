@@ -54,3 +54,7 @@ TODOS.md
 CLAUDE.md
 DESIGN.md
 Client/CLIENT-REVIEW.md
+
+# local signing keys
+.secrets/
+

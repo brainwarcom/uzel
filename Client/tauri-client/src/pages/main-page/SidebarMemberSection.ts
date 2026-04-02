@@ -54,7 +54,7 @@ export function createSidebarMemberSection(opts: SidebarMemberSectionOptions): S
   // --- Header ---
   const memberHeader = createElement("div", { class: "category sidebar-members-header" });
   const memberArrow = createElement("span", { class: "category-arrow" }, "\u25BC");
-  const memberLabelEl = createElement("span", { class: "category-name" }, "MEMBERS");
+  const memberLabelEl = createElement("span", { class: "category-name" }, "УЧАСТНИКИ");
   appendChildren(memberHeader, memberArrow, memberLabelEl);
   memberListContainer.appendChild(memberHeader);
 
@@ -134,18 +134,18 @@ export function createSidebarMemberSection(opts: SidebarMemberSectionOptions): S
     onKick: async (userId, username) => {
       try {
         await api.adminKickMember(userId);
-        getToast()?.show(`Kicked ${username}`, "success");
+        getToast()?.show(`Пользователь ${username} исключен`, "success");
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Failed to kick member";
+        const msg = err instanceof Error ? err.message : "Не удалось исключить участника";
         getToast()?.show(msg, "error");
       }
     },
     onBan: async (userId, username) => {
       try {
         await api.adminBanMember(userId);
-        getToast()?.show(`Banned ${username}`, "success");
+        getToast()?.show(`Пользователь ${username} заблокирован`, "success");
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Failed to ban member";
+        const msg = err instanceof Error ? err.message : "Не удалось заблокировать участника";
         getToast()?.show(msg, "error");
       }
     },
@@ -154,9 +154,9 @@ export function createSidebarMemberSection(opts: SidebarMemberSectionOptions): S
       if (roleId === undefined) return;
       try {
         await api.adminChangeRole(userId, roleId);
-        getToast()?.show(`Changed ${username}'s role to ${newRole}`, "success");
+        getToast()?.show(`Роль пользователя ${username} изменена на ${newRole}`, "success");
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Failed to change role";
+        const msg = err instanceof Error ? err.message : "Не удалось изменить роль";
         getToast()?.show(msg, "error");
       }
     },

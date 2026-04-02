@@ -366,7 +366,7 @@ export function wireDispatcher(ws: WsClient): DispatcherCleanup {
         reason: payload.reason,
         delaySeconds: payload.delay_seconds,
       });
-      setTransientError(`Server is restarting: ${payload.reason ?? "maintenance"}`);
+      setTransientError(`Сервер перезапускается: ${payload.reason ?? "обслуживание"}`);
     }),
   );
 
@@ -378,12 +378,12 @@ export function wireDispatcher(ws: WsClient): DispatcherCleanup {
       });
       if (payload.code === "BANNED") {
         // Banned users must not reconnect — show error and force logout.
-        setTransientError(payload.message || "You have been banned");
+        setTransientError(payload.message || "Вы были заблокированы");
         clearAuth();
         return;
       }
       if (payload.code === "RATE_LIMITED" || payload.code === "FORBIDDEN") {
-        setTransientError(payload.message || "Server error");
+        setTransientError(payload.message || "Ошибка сервера");
       }
     }),
   );

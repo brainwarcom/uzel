@@ -118,7 +118,7 @@ export function createMessageInput(
 
     // Block send while uploads are still in flight
     if (pendingUploadCount > 0) {
-      showUploadError("Please wait for uploads to finish");
+      showUploadError("Дождитесь завершения загрузки файлов");
       return;
     }
 
@@ -169,7 +169,7 @@ export function createMessageInput(
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.onerror = () => reject(new Error("Не удалось прочитать файл"));
       reader.readAsDataURL(file);
     });
   }
@@ -179,13 +179,13 @@ export function createMessageInput(
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
-      showUploadError(`File too large: ${file.name} exceeds 100 MB limit`);
+      showUploadError(`Файл слишком большой: ${file.name} превышает лимит 100 МБ`);
       return;
     }
 
     // Validate file type (allow empty type for files without MIME info)
     if (file.type !== "" && !ALLOWED_TYPES.some((t) => file.type.startsWith(t))) {
-      showUploadError(`Unsupported file type: ${file.type}`);
+      showUploadError(`Неподдерживаемый тип файла: ${file.type}`);
       return;
     }
 
@@ -251,8 +251,8 @@ export function createMessageInput(
     } catch (err) {
       // Upload failed — remove preview and show error
       removePreviewItem(tempId);
-      const errMsg = err instanceof Error ? err.message : "Upload failed";
-      showUploadError(`Upload failed: ${errMsg}`);
+      const errMsg = err instanceof Error ? err.message : "Ошибка загрузки";
+      showUploadError(`Не удалось загрузить файл: ${errMsg}`);
     } finally {
       pendingUploadCount--;
     }
@@ -302,7 +302,7 @@ export function createMessageInput(
 
     editBar = createElement("div", { class: "reply-bar" });
     const editInner = createElement("div", { class: "reply-bar-inner" });
-    const editText = createElement("strong", {}, "Editing message");
+    const editText = createElement("strong", {}, "Редактирование сообщения");
     editInner.appendChild(editText);
     const editClose = createElement("button", { class: "reply-close" });
     editClose.appendChild(createIcon("x", 14));
@@ -314,7 +314,7 @@ export function createMessageInput(
 
     const inputBox = createElement("div", { class: "message-input-box" });
     const attachBtn = createElement("button",
-      { class: "input-btn attach-btn", "aria-label": "Attach file" }, "+");
+      { class: "input-btn attach-btn", "aria-label": "Прикрепить файл" }, "+");
 
     // File picker via attach button
     if (options.onUploadFile !== undefined) {
@@ -334,19 +334,19 @@ export function createMessageInput(
       root?.appendChild(fileInput);
     } else {
       attachBtn.setAttribute("disabled", "true");
-      attachBtn.title = "File uploads not available";
+      attachBtn.title = "Загрузка файлов недоступна";
     }
     textarea = createElement("textarea", {
       class: "msg-textarea", placeholder: `Message #${options.channelName}`, rows: "1",
       "data-testid": "msg-textarea",
     });
     const emojiBtn = createElement("button",
-      { class: "input-btn emoji-btn", "aria-label": "Emoji" });
+      { class: "input-btn emoji-btn", "aria-label": "Эмодзи" });
     emojiBtn.appendChild(createIcon("smile", 20));
     const gifBtn = createElement("button",
       { class: "input-btn gif-btn", "aria-label": "GIF" }, "GIF");
     const sendBtn = createElement("button",
-      { class: "input-btn send-btn", "aria-label": "Send message", "data-testid": "send-btn" });
+      { class: "input-btn send-btn", "aria-label": "Отправить сообщение", "data-testid": "send-btn" });
     sendBtn.appendChild(createIcon("send", 20));
 
     textarea.addEventListener("input", () => { autoResize(); maybeEmitTyping(); }, { signal });

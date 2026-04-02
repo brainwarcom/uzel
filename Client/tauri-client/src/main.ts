@@ -187,7 +187,7 @@ function renderPage(pageId: "connect" | "main"): void {
     saveCredential(host, username, token, password).then((ok) => {
       if (!ok) {
         log.warn("Credential save failed — auto-login will not work for this server");
-        setTransientError("Could not save credentials — auto-login won't work");
+        setTransientError("Не удалось сохранить учетные данные — автовход не будет работать");
       }
     }).catch(() => {
       // saveCredential already catches internally; this is defence-in-depth
@@ -396,9 +396,9 @@ function renderPage(pageId: "connect" | "main"): void {
           }
         } catch (err) {
           if (!autoLoginCancelled) {
-            const message = err instanceof Error ? err.message : "Auto-login failed";
+            const message = err instanceof Error ? err.message : "Ошибка автовхода";
             log.warn("Auto-login failed", { host: autoProfile.host, error: message });
-            connectPage.showError(`Auto-login failed: ${message}`);
+            connectPage.showError(`Ошибка автовхода: ${message}`);
           }
         }
       }

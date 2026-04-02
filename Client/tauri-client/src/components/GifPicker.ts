@@ -43,7 +43,7 @@ export function createGifPicker(options: GifPickerOptions): {
   const searchInput = createElement("input", {
     class: "gp-search",
     type: "text",
-    placeholder: "Search Tenor",
+    placeholder: "Поиск GIF в Tenor",
   });
   header.appendChild(searchInput);
 
@@ -60,11 +60,11 @@ export function createGifPicker(options: GifPickerOptions): {
 
   // Loading indicator
   const loadingEl = createElement("div", { class: "gp-loading" });
-  setText(loadingEl, "Loading...");
+  setText(loadingEl, "Загрузка...");
 
   // Empty state
   const emptyEl = createElement("div", { class: "gp-empty" });
-  setText(emptyEl, "No GIFs found");
+  setText(emptyEl, "GIF не найдены");
 
   // ── Rendering ──
 
@@ -121,7 +121,7 @@ export function createGifPicker(options: GifPickerOptions): {
       if (requestId === currentRequestId) {
         clearChildren(gridArea);
         const errEl = createElement("div", { class: "gp-empty" });
-        const msg = err instanceof Error ? err.message : "Failed to load GIFs";
+        const msg = err instanceof Error ? err.message : "Не удалось загрузить GIF";
         setText(errEl, msg);
         gridArea.appendChild(errEl);
       }

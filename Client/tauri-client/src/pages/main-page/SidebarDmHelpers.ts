@@ -113,7 +113,7 @@ export async function handleCreateDm(
     addDmChannel(dmChannel);
     selectDmConversation(dmChannel, deps);
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Failed to create DM";
+    const msg = err instanceof Error ? err.message : "Не удалось создать личный диалог";
     deps.getToast()?.show(msg, "error");
   }
 }
@@ -130,7 +130,7 @@ export function buildDmConversations(activeDmUserId: number | null): readonly Dm
     username: dm.recipient.username,
     avatar: dm.recipient.avatar || null,
     status: (dm.recipient.status as DmConversation["status"]) ?? "offline",
-    lastMessage: dm.lastMessage || "No messages yet",
+    lastMessage: dm.lastMessage || "Пока нет сообщений",
     timestamp: dm.lastMessageAt,
     unread: dm.unreadCount > 0,
     active: dm.recipient.id === activeDmUserId,

@@ -29,11 +29,11 @@ interface EmojiCategory {
 
 const CATEGORIES: readonly EmojiCategory[] = [
   {
-    name: "Recent",
+    name: "Недавние",
     emoji: [], // populated at runtime from localStorage
   },
   {
-    name: "Smileys",
+    name: "Смайлы",
     emoji: [
       "😀", "😃", "😄", "😁", "😆", "😅", "🤣", "😂", "🙂", "😊",
       "😇", "🥰", "😍", "🤩", "😘", "😗", "😋", "😛", "😜", "🤪",
@@ -45,7 +45,7 @@ const CATEGORIES: readonly EmojiCategory[] = [
     ],
   },
   {
-    name: "People",
+    name: "Люди",
     emoji: [
       "👋", "🤚", "🖐", "✋", "🖖", "👌", "🤌", "🤏", "✌️", "🤞",
       "🤟", "🤘", "🤙", "👈", "👉", "👆", "👇", "☝️", "👍", "👎",
@@ -53,7 +53,7 @@ const CATEGORIES: readonly EmojiCategory[] = [
     ],
   },
   {
-    name: "Nature",
+    name: "Природа",
     emoji: [
       "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯",
       "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐧", "🐦", "🐤", "🦄",
@@ -61,7 +61,7 @@ const CATEGORIES: readonly EmojiCategory[] = [
     ],
   },
   {
-    name: "Food",
+    name: "Еда",
     emoji: [
       "🍎", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓", "🍒", "🍑", "🍍",
       "🥝", "🍔", "🍟", "🍕", "🌭", "🍿", "🧀", "🥚", "🍳", "🥓",
@@ -69,7 +69,7 @@ const CATEGORIES: readonly EmojiCategory[] = [
     ],
   },
   {
-    name: "Objects",
+    name: "Объекты",
     emoji: [
       "⚽", "🏀", "🏈", "⚾", "🎾", "🎮", "🎲", "🎯", "🎵", "🎶",
       "💡", "🔥", "⭐", "🌟", "💫", "✨", "💥", "❤️", "🧡", "💛",
@@ -77,7 +77,7 @@ const CATEGORIES: readonly EmojiCategory[] = [
     ],
   },
   {
-    name: "Symbols",
+    name: "Символы",
     emoji: [
       "✅", "❌", "❓", "❗", "‼️", "⁉️", "💤", "💮", "♻️", "🔰",
       "⚠️", "🚫", "🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "⚫", "⚪",
@@ -225,20 +225,20 @@ export function createEmojiPicker(options: EmojiPickerOptions): {
   function getAllCategories(): readonly EmojiCategory[] {
     const recent = getRecentEmoji();
     const cats: EmojiCategory[] = [
-      { name: "Recent", emoji: recent },
+      { name: "Недавние", emoji: recent },
     ];
 
     // Custom server emoji
     if (options.customEmoji && options.customEmoji.length > 0) {
       cats.push({
-        name: "Custom",
+        name: "Пользовательские",
         emoji: options.customEmoji.map((e) => `:${e.shortcode}:`),
       });
     }
 
     // Add built-in categories (skip the empty "Recent" placeholder)
     for (const cat of CATEGORIES) {
-      if (cat.name === "Recent") continue;
+      if (cat.name === "Недавние") continue;
       cats.push(cat);
     }
 
@@ -294,7 +294,7 @@ export function createEmojiPicker(options: EmojiPickerOptions): {
     if (scrollArea.children.length === 0) {
       const empty = createElement("div", {
         style: "padding: 24px; text-align: center; color: var(--text-faint); font-size: 13px;",
-      }, "No emoji found");
+      }, "Эмодзи не найдены");
       scrollArea.appendChild(empty);
     }
   }

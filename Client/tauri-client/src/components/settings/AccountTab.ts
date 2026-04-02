@@ -634,7 +634,7 @@ export function buildAccountTab(
   saveBtn.addEventListener("click", () => {
     const newName = editInput.value.trim();
     if (newName.length < 2 || newName.length > MAX_USERNAME_LEN) {
-      setText(usernameError, `Username must be 2\u2013${MAX_USERNAME_LEN} characters.`);
+      setText(usernameError, `Имя пользователя должно содержать 2-${MAX_USERNAME_LEN} символов.`);
       return;
     }
     setText(usernameError, "");

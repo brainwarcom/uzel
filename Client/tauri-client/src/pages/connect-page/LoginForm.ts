@@ -466,7 +466,7 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
       return "Укажите пароль.";
     }
     if (password.length < MIN_PASSWORD_LENGTH) {
-      return `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
+      return `Пароль должен содержать не менее ${MIN_PASSWORD_LENGTH} символов.`;
     }
     if (formMode === "register") {
       const inviteCode = inviteInput.value.trim();

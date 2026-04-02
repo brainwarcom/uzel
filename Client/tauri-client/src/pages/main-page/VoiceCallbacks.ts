@@ -20,7 +20,14 @@ import {
   disableScreenshare,
 } from "@lib/livekitSession";
 import { loadPref } from "@components/settings/helpers";
-import { playVoiceJoinSound, playVoiceLeaveSound } from "@lib/sounds";
+import {
+  playVoiceJoinSound,
+  playVoiceLeaveSound,
+  playVoiceMuteToggleSound,
+  playVoiceDeafenToggleSound,
+  playVoiceCameraToggleSound,
+  playVoiceScreenshareToggleSound,
+} from "@lib/sounds";
 
 const log = createLogger("voice-callbacks");
 
@@ -54,6 +61,10 @@ export function createVoiceWidgetCallbacks(
   ws: WsClient,
   limiters: VoiceLimiters,
 ): VoiceWidgetCallbacks {
+  function canPlayUiSound(): boolean {
+    return loadPref<boolean>("notificationSounds", true);
+  }
+
   return {
     onDisconnect: () => {
       if (voiceStore.getState().currentChannelId === null) return;
@@ -68,6 +79,7 @@ export function createVoiceWidgetCallbacks(
     onMuteToggle: () => {
       if (!limiters.voice.tryConsume()) return;
       const state = voiceStore.getState();
+      const muting = !state.localMuted;
       if (state.localMuted) {
         voiceSessionSetMuted(false);
         ws.send({ type: "voice_mute", payload: { muted: false } });
@@ -79,10 +91,14 @@ export function createVoiceWidgetCallbacks(
         voiceSessionSetMuted(true);
         ws.send({ type: "voice_mute", payload: { muted: true } });
       }
+      if (canPlayUiSound()) {
+        playVoiceMuteToggleSound(muting);
+      }
     },
     onDeafenToggle: () => {
       if (!limiters.voice.tryConsume()) return;
       const state = voiceStore.getState();
+      const deafening = !state.localDeafened;
       if (state.localDeafened) {
         voiceSessionSetDeafened(false);
         ws.send({ type: "voice_deafen", payload: { deafened: false } });
@@ -96,6 +112,9 @@ export function createVoiceWidgetCallbacks(
           ws.send({ type: "voice_mute", payload: { muted: true } });
         }
       }
+      if (canPlayUiSound()) {
+        playVoiceDeafenToggleSound(deafening);
+      }
     },
     onCameraToggle: () => {
       if (!limiters.voiceVideo.tryConsume()) return;
@@ -108,6 +127,9 @@ export function createVoiceWidgetCallbacks(
       } else {
         disableCamera().catch(handleCameraError);
       }
+      if (canPlayUiSound()) {
+        playVoiceCameraToggleSound(next);
+      }
     },
     onScreenshareToggle: () => {
       if (!limiters.voiceVideo.tryConsume()) return;
@@ -119,6 +141,9 @@ export function createVoiceWidgetCallbacks(
         enableScreenshare().catch(handleScreenshareError);
       } else {
         disableScreenshare().catch(handleScreenshareError);
+      }
+      if (canPlayUiSound()) {
+        playVoiceScreenshareToggleSound(next);
       }
     },
   };

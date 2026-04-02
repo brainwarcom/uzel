@@ -392,7 +392,7 @@ export class AudioPipeline {
       }
     } catch (err) {
       log.error("Failed to reapply audio processing", err);
-      onError?.("Failed to update audio settings");
+      onError?.("Не удалось обновить параметры аудио");
     }
   }
 }

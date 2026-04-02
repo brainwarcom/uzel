@@ -59,3 +59,61 @@ export function playVoiceLeaveSound(): void {
     { freq: 500, duration: 0.14, gain: 0.14 },
   ]);
 }
+
+export function playVoiceMuteToggleSound(enabled: boolean): void {
+  if (enabled) {
+    playToneSequence([
+      { freq: 420, duration: 0.08, gain: 0.12 },
+      { freq: 320, duration: 0.1, gain: 0.11 },
+    ]);
+    return;
+  }
+  playToneSequence([
+    { freq: 430, duration: 0.06, gain: 0.11 },
+    { freq: 620, duration: 0.08, gain: 0.13 },
+  ]);
+}
+
+export function playVoiceDeafenToggleSound(enabled: boolean): void {
+  if (enabled) {
+    playToneSequence([
+      { freq: 360, duration: 0.1, gain: 0.12 },
+      { freq: 280, duration: 0.12, gain: 0.12 },
+    ]);
+    return;
+  }
+  playToneSequence([
+    { freq: 380, duration: 0.07, gain: 0.11 },
+    { freq: 560, duration: 0.09, gain: 0.13 },
+  ]);
+}
+
+export function playVoiceCameraToggleSound(enabled: boolean): void {
+  if (enabled) {
+    playToneSequence([
+      { freq: 560, duration: 0.06, gain: 0.11 },
+      { freq: 760, duration: 0.09, gain: 0.13 },
+    ]);
+    return;
+  }
+  playToneSequence([
+    { freq: 700, duration: 0.06, gain: 0.11 },
+    { freq: 460, duration: 0.1, gain: 0.12 },
+  ]);
+}
+
+export function playVoiceScreenshareToggleSound(enabled: boolean): void {
+  if (enabled) {
+    playToneSequence([
+      { freq: 640, duration: 0.06, gain: 0.1 },
+      { freq: 820, duration: 0.07, gain: 0.11 },
+      { freq: 980, duration: 0.08, gain: 0.12 },
+    ]);
+    return;
+  }
+  playToneSequence([
+    { freq: 900, duration: 0.06, gain: 0.11 },
+    { freq: 680, duration: 0.07, gain: 0.1 },
+    { freq: 520, duration: 0.09, gain: 0.11 },
+  ]);
+}

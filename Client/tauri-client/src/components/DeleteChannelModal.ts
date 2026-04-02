@@ -46,9 +46,9 @@ export function createDeleteChannelModal(
     const warning = createElement("div", { class: "modal-danger-text" });
     appendChildren(
       warning,
-      "Are you sure you want to delete ",
+      "Вы уверены, что хотите удалить ",
       createElement("strong", {}, `#${channelName}`),
-      "? This action cannot be undone and all messages in this channel will be lost.",
+      "? Это действие нельзя отменить, и все сообщения в этом канале будут потеряны.",
     );
     body.appendChild(warning);
 
@@ -82,7 +82,7 @@ export function createDeleteChannelModal(
       "click",
       async () => {
         deleteBtn.setAttribute("disabled", "true");
-        setText(deleteBtn, "Deleting...");
+        setText(deleteBtn, "Удаление...");
 
         try {
           await onConfirm();
@@ -90,7 +90,7 @@ export function createDeleteChannelModal(
           errorEl.style.display = "block";
           setText(
             errorEl,
-            err instanceof Error ? err.message : "Failed to delete channel",
+            err instanceof Error ? err.message : "Не удалось удалить канал",
           );
           deleteBtn.removeAttribute("disabled");
           setText(deleteBtn, "Удалить канал");

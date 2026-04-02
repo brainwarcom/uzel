@@ -90,12 +90,12 @@ export class DeviceManager {
             this.audioPipeline?.setupAudioPipeline();
           } catch (pipelineErr) {
             log.warn("Audio pipeline setup failed after device fallback", pipelineErr);
-            this.onToast?.("Audio pipeline error after device switch");
+            this.onToast?.("Ошибка аудиопайплайна после переключения устройства");
           }
-          this.onToast?.("Audio device disconnected — switched to default");
+          this.onToast?.("Аудиоустройство отключено — переключено на устройство по умолчанию");
         } catch (err) {
           log.error("Failed to fallback to default input device", err);
-          this.onErrorCallback?.("No audio input device available");
+          this.onErrorCallback?.("Нет доступного устройства ввода звука");
         }
       }
 
@@ -105,7 +105,7 @@ export class DeviceManager {
       if (savedOutput !== "" && !outputDevices.some(d => d.deviceId === savedOutput)) {
         log.warn("Saved audio output device removed — falling back to default", { savedOutput });
         savePref("audioOutputDevice", "");
-        this.onToast?.("Audio output device disconnected — switched to default");
+        this.onToast?.("Устройство вывода звука отключено — переключено на устройство по умолчанию");
       }
     } catch (err) {
       log.warn("Failed to enumerate devices after change", err);
@@ -129,7 +129,7 @@ export class DeviceManager {
         this.audioPipeline?.setupAudioPipeline();
       } catch (pipelineErr) {
         log.warn("Audio pipeline setup failed after input device switch", pipelineErr);
-        this.onToast?.("Audio pipeline error after device switch");
+        this.onToast?.("Ошибка аудиопайплайна после переключения устройства");
       }
       // Re-apply or remove RNNoise processor based on current setting
       const enhancedNS = loadPref<boolean>("enhancedNoiseSuppression", false);
@@ -141,7 +141,7 @@ export class DeviceManager {
       log.info("Switched input device", { deviceId });
     } catch (err) {
       log.error("Failed to switch input device", err);
-      this.onErrorCallback?.("Failed to switch microphone");
+      this.onErrorCallback?.("Не удалось переключить микрофон");
     }
   }
 

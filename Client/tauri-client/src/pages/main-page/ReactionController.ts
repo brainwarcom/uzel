@@ -37,7 +37,7 @@ export function createReactionController(
 
   function sendReaction(msgId: number, emoji: string): void {
     if (!reactionsLimiter.tryConsume()) {
-      showError("Slow down! Please wait before reacting again.");
+      showError("Слишком быстро. Подождите немного перед следующей реакцией.");
       return;
     }
     const msgs = getChannelMessages(getChannelId());

@@ -472,7 +472,7 @@ export function createWsClient() {
     async acceptCertFingerprint(host: string, fingerprint: string): Promise<void> {
       await ensureTauriApis();
       if (tauriInvoke === null) {
-        throw new Error("Tauri APIs not available");
+        throw new Error("API Tauri недоступны");
       }
       await tauriInvoke("accept_cert_fingerprint", { host, fingerprint });
       certMismatchBlock = false;

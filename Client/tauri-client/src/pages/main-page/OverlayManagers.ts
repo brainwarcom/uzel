@@ -184,7 +184,7 @@ export function createInviteManagerController(opts: {
       }
     } catch (err) {
       log.error("Failed to open invite manager", { error: String(err) });
-      showToast("Failed to load invites", "error");
+      showToast("Не удалось загрузить приглашения", "error");
     }
   }
 
@@ -236,7 +236,7 @@ export function createPinnedPanelController(opts: {
             if (found) {
               close();
             } else {
-              showToast("Message not in loaded window", "info");
+              showToast("Сообщение отсутствует в текущем загруженном окне", "info");
             }
           } else {
             close();
@@ -247,7 +247,7 @@ export function createPinnedPanelController(opts: {
             close();
           }).catch((err: unknown) => {
             log.error("Failed to unpin message", { msgId, error: String(err) });
-            showToast("Failed to unpin message", "error");
+            showToast("Не удалось открепить сообщение", "error");
           });
         },
         onClose: close,
@@ -257,7 +257,7 @@ export function createPinnedPanelController(opts: {
       }
     } catch (err) {
       log.error("Failed to load pinned messages", { error: String(err) });
-      showToast("Failed to load pinned messages", "error");
+      showToast("Не удалось загрузить закрепленные сообщения", "error");
     }
   }
 
@@ -304,7 +304,7 @@ export function createSearchOverlayController(opts: {
         } catch (err) {
           if (err instanceof DOMException && err.name === "AbortError") throw err;
           log.error("Search failed", { query, error: String(err) });
-          showToast("Search failed", "error");
+          showToast("Не удалось выполнить поиск", "error");
           throw err;
         }
       },
@@ -315,7 +315,7 @@ export function createSearchOverlayController(opts: {
           requestAnimationFrame(() => {
             const found = opts.onJumpToMessage!(result.channel_id, result.message_id);
             if (!found) {
-              showToast("Message not in loaded history", "info");
+              showToast("Сообщение не найдено в загруженной истории", "info");
             }
           });
         }

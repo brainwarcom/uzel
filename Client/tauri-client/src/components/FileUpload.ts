@@ -70,7 +70,7 @@ export function createFileUpload(options: FileUploadOptions): FileUploadComponen
   async function handleFile(file: File): Promise<void> {
     errorDiv.classList.add("file-upload__error--hidden");
     if (file.size > maxBytes) {
-      showError(`File too large (${formatSize(file.size)}). Max ${options.maxSizeMb ?? DEFAULT_MAX_SIZE_MB} MB.`);
+      showError(`Файл слишком большой (${formatSize(file.size)}). Максимум: ${options.maxSizeMb ?? DEFAULT_MAX_SIZE_MB} МБ.`);
       return;
     }
     showPreview(file);
@@ -82,7 +82,7 @@ export function createFileUpload(options: FileUploadOptions): FileUploadComponen
       setTimeout(() => resetPreview(), 1500);
     } catch (err) {
       if (uploadAbort?.signal.aborted) return;
-      showError(err instanceof Error ? err.message : "Upload failed");
+      showError(err instanceof Error ? err.message : "Ошибка загрузки");
       resetPreview();
     }
   }
@@ -91,7 +91,7 @@ export function createFileUpload(options: FileUploadOptions): FileUploadComponen
     root = createElement("div", { class: "file-upload" });
 
     dropzone = createElement("div", { class: "file-upload__dropzone file-upload__dropzone--hidden" });
-    appendChildren(dropzone, createElement("span", { class: "file-upload__droptext" }, "Drop files here"));
+    appendChildren(dropzone, createElement("span", { class: "file-upload__droptext" }, "Перетащите файлы сюда"));
 
     fileInput = createElement("input", { class: "file-upload__input", type: "file" });
     fileInput.style.display = "none";

@@ -335,7 +335,7 @@ export class LiveKitSession {
     }
     this.leaveVoice(false);
     leaveVoiceChannel();
-    if (isUnexpected) this.onErrorCallback?.("Voice connection lost — disconnected");
+    if (isUnexpected) this.onErrorCallback?.("Голосовое соединение потеряно — отключено");
   };
 
   /** Attempt to auto-reconnect after unexpected disconnect using stored token.
@@ -386,7 +386,7 @@ export class LiveKitSession {
     log.error("Auto-reconnect exhausted all attempts, giving up");
     this.leaveVoice(true);
     leaveVoiceChannel();
-    this.onErrorCallback?.("Voice connection lost — failed to reconnect");
+    this.onErrorCallback?.("Голосовое соединение потеряно — не удалось переподключиться");
   }
 
   // --- URL resolution ---
@@ -523,13 +523,13 @@ export class LiveKitSession {
         log.warn("Auto-reconnect: mic unavailable — listen-only mode", micErr);
       } else if (micErr instanceof DOMException && micErr.name === "NotAllowedError") {
         log.warn("Microphone permission denied — joined in listen-only mode");
-        this.onErrorCallback?.("Microphone permission denied — joined in listen-only mode");
+        this.onErrorCallback?.("Доступ к микрофону запрещен — вход в режиме только прослушивания");
       } else if (micErr instanceof DOMException && micErr.name === "NotFoundError") {
         log.warn("No microphone found — joined in listen-only mode");
-        this.onErrorCallback?.("No microphone found — joined in listen-only mode");
+        this.onErrorCallback?.("Микрофон не найден — вход в режиме только прослушивания");
       } else {
         log.warn("Microphone unavailable — joined in listen-only mode", micErr);
-        this.onErrorCallback?.("Microphone unavailable — joined in listen-only mode");
+        this.onErrorCallback?.("Микрофон недоступен — вход в режиме только прослушивания");
       }
     }
 
@@ -671,7 +671,7 @@ export class LiveKitSession {
     } catch (err) {
       log.error("Failed to connect to LiveKit", { url: resolvedUrl, error: err });
       if (this.room !== null) {
-        this.onErrorCallback?.("Failed to join voice — connection error");
+        this.onErrorCallback?.("Не удалось подключиться к голосовому каналу — ошибка соединения");
       }
       this.leaveVoice(false);
     } finally {
@@ -706,7 +706,7 @@ export class LiveKitSession {
       }
     } catch (err) {
       log.warn("Microphone retry failed — still in listen-only mode", err);
-      this.onErrorCallback?.("Microphone still unavailable — check your browser permissions");
+      this.onErrorCallback?.("Микрофон все еще недоступен — проверьте разрешения");
     }
   }
 
@@ -794,7 +794,7 @@ export class LiveKitSession {
   async enableCamera(): Promise<void> {
     if (this.room === null || this.ws === null) {
       log.warn("Cannot enable camera: no active voice session");
-      this.onErrorCallback?.("Join a voice channel first");
+      this.onErrorCallback?.("Сначала подключитесь к голосовому каналу");
       return;
     }
     setLocalCamera(true);
@@ -826,11 +826,11 @@ export class LiveKitSession {
       setLocalCamera(false);
       log.error("Failed to enable camera", err);
       if (err instanceof DOMException && err.name === "NotAllowedError") {
-        this.onErrorCallback?.("Camera permission denied");
+        this.onErrorCallback?.("Доступ к камере запрещен");
       } else if (err instanceof DOMException && err.name === "NotFoundError") {
-        this.onErrorCallback?.("No camera found");
+        this.onErrorCallback?.("Камера не найдена");
       } else {
-        this.onErrorCallback?.("Failed to start camera");
+        this.onErrorCallback?.("Не удалось запустить камеру");
       }
     }
   }
@@ -863,7 +863,7 @@ export class LiveKitSession {
   async enableScreenshare(): Promise<void> {
     if (this.room === null || this.ws === null) {
       log.warn("Cannot enable screenshare: no active voice session");
-      this.onErrorCallback?.("Join a voice channel first");
+      this.onErrorCallback?.("Сначала подключитесь к голосовому каналу");
       return;
     }
     setLocalScreenshare(true);
@@ -894,9 +894,9 @@ export class LiveKitSession {
       setLocalScreenshare(false);
       log.error("Failed to enable screenshare", err);
       if (err instanceof DOMException && err.name === "NotAllowedError") {
-        this.onErrorCallback?.("Screen sharing permission denied");
+        this.onErrorCallback?.("Доступ к демонстрации экрана запрещен");
       } else {
-        this.onErrorCallback?.("Failed to start screen sharing");
+        this.onErrorCallback?.("Не удалось запустить демонстрацию экрана");
       }
     }
   }

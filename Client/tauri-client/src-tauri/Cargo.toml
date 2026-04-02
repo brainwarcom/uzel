@@ -1,11 +1,11 @@
 [package]
-name = "owncord-client"
-version = "1.0.6"
+name = "uzel"
+version = "1.0.7"
 edition = "2021"
 description = "Uzel Desktop Client"
 
 [lib]
-name = "owncord_client_lib"
+name = "uzel_client_lib"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [build-dependencies]

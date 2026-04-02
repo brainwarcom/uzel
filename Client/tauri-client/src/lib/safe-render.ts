@@ -36,7 +36,7 @@ function renderFallback(container: Element, error: unknown): void {
   const fallback = document.createElement("div");
   fallback.style.cssText =
     "padding:16px;color:#f23f43;background:#2b2d31;border-radius:8px;font-size:13px;margin:8px;";
-  fallback.textContent = "Something went wrong rendering this section.";
+  fallback.textContent = "При отображении этого раздела произошла ошибка.";
   container.appendChild(fallback);
 
   // Log the actual error for debugging

@@ -5,23 +5,23 @@
 
 :root {
   /* Backgrounds */
-  --bg-tertiary:   #1e1f22;
-  --bg-secondary:  #2b2d31;
-  --bg-primary:    #313338;
-  --bg-input:      #383a40;
-  --bg-hover:      #35373c;
-  --bg-active:     #404249;
-  --bg-overlay:    rgba(0, 0, 0, 0.7);
+  --bg-tertiary:   #17191e;
+  --bg-secondary:  #20242c;
+  --bg-primary:    #272c35;
+  --bg-input:      #2f3540;
+  --bg-hover:      #313846;
+  --bg-active:     #3a4353;
+  --bg-overlay:    rgba(10, 12, 16, 0.74);
 
   /* Background modifiers (semi-transparent overlays) */
-  --bg-modifier-hover:    rgba(79, 84, 92, 0.16);
-  --bg-modifier-active:   rgba(79, 84, 92, 0.24);
-  --bg-modifier-selected: rgba(79, 84, 92, 0.32);
+  --bg-modifier-hover:    rgba(143, 157, 184, 0.12);
+  --bg-modifier-active:   rgba(143, 157, 184, 0.2);
+  --bg-modifier-selected: rgba(143, 157, 184, 0.28);
 
   /* Accent */
-  --accent:        #5865f2;
-  --accent-hover:  #4752c4;
-  --accent-active: #3c45a5;
+  --accent:        #5f8bff;
+  --accent-hover:  #4d78e3;
+  --accent-active: #3f63c3;
 
   /* Theme contract — overrideable by custom themes */
   --accent-primary:   var(--accent);
@@ -30,11 +30,11 @@
   --border-glow:      transparent;
 
   /* Text */
-  --text-normal:   #dbdee1;
-  --text-muted:    #949ba4;
-  --text-faint:    #80848e;
-  --text-micro:    #6d6f78;
-  --text-link:     #00a8fc;
+  --text-normal:   #e8edf7;
+  --text-muted:    #acb7cb;
+  --text-faint:    #8a95aa;
+  --text-micro:    #707b90;
+  --text-link:     #73a2ff;
 
   /* Semantic text aliases */
   --text-positive: #23a55a;
@@ -42,26 +42,26 @@
   --text-danger:   #f23f43;
 
   /* Header colors */
-  --header-primary:   #f2f3f5;
-  --header-secondary: #b5bac1;
+  --header-primary:   #f2f5fc;
+  --header-secondary: #c2cada;
 
   /* Interactive icon states */
-  --interactive-normal: #b5bac1;
-  --interactive-hover:  #dbdee1;
+  --interactive-normal: #c2cada;
+  --interactive-hover:  #e8edf7;
   --interactive-active: #fff;
-  --interactive-muted:  #4e5058;
+  --interactive-muted:  #5c6577;
 
   /* Channel icon */
-  --channel-icon: #80848e;
+  --channel-icon: #8a95aa;
 
   /* Status colors */
-  --green:         #23a55a;
-  --yellow:        #f0b232;
-  --red:           #f23f43;
+  --green:         #34c37a;
+  --yellow:        #f4bd4b;
+  --red:           #ff5a64;
 
   /* Borders */
-  --border:        #3f4147;
-  --border-strong: #4e5058;
+  --border:        #3a414f;
+  --border-strong: #4b5668;
 
   /* Role colors */
   --role-owner:    #e74c3c;
@@ -70,8 +70,8 @@
   --role-member:   #949ba4;
 
   /* Elevation shadows */
-  --elevation-low:  0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(4, 4, 5, 0.05);
-  --elevation-high: 0 8px 16px rgba(0, 0, 0, 0.24);
+  --elevation-low:  0 1px 0 rgba(7, 10, 14, 0.24), 0 8px 20px rgba(7, 10, 14, 0.16);
+  --elevation-high: 0 18px 44px rgba(4, 8, 14, 0.45);
 
   /* Scrollbar colors */
   --scrollbar-thin-thumb:  #1a1b1e;
@@ -89,24 +89,29 @@
   --font-mono:    "Cascadia Code", "Consolas", monospace;
 
   /* Typography scale */
-  --font-size-xxs: 10px;
-  --font-size-xs:  12px;
-  --font-size-sm:  13px;
-  --font-size-md:  14px;
-  --font-size-lg:  16px;
-  --font-size-xl:  20px;
-  --font-size-xxl: 24px;
+  --font-size-xxs: 11px;
+  --font-size-xs:  13px;
+  --font-size-sm:  14px;
+  --font-size-md:  15px;
+  --font-size-lg:  17px;
+  --font-size-xl:  22px;
+  --font-size-xxl: 28px;
 
   /* Radii */
-  --radius-sm:     4px;
-  --radius-md:     8px;
-  --radius-lg:     16px;
+  --radius-sm:     8px;
+  --radius-md:     12px;
+  --radius-lg:     18px;
   --radius-pill:   24px;
   --radius-circle: 50%;
 
   /* Spacing */
-  --sidebar-width: 240px;
-  --header-height: 48px;
+  --sidebar-width: 320px;
+  --header-height: 56px;
+
+  /* Control sizing (v1.1 modern scale) */
+  --control-height-sm: 34px;
+  --control-height-md: 40px;
+  --control-height-lg: 46px;
 
   /* Message layout */
   --message-group-spacing: 17px;

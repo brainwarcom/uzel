@@ -2150,6 +2150,208 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ═══ v1.1.0 Clean Modern Pass ═══ */
+.unified-sidebar,
+.channel-sidebar {
+  width: 320px;
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.unified-sidebar-header {
+  height: 52px;
+  padding: 0 16px;
+}
+.unified-sidebar-header .server-icon-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+.unified-sidebar-header .server-name { font-size: 14px; }
+.unified-sidebar-header .server-online { font-size: 11px; }
+.sidebar-invite-btn {
+  height: var(--control-height-sm);
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+
+.channel-sidebar-header {
+  height: 56px;
+  padding: 0 18px;
+}
+.channel-sidebar-header h2 { font-size: 17px; }
+
+.category { padding: 14px 10px 6px 16px; }
+.category-name { font-size: 12px; letter-spacing: .4px; }
+
+.channel-item {
+  padding: 8px 10px;
+  margin: 2px 8px;
+  border-radius: var(--radius-md);
+}
+.channel-item .ch-name { font-size: 15px; }
+.channel-item .ch-icon { width: 22px; }
+
+.voice-users-list { padding: 4px 0 6px 38px; }
+.voice-user-item {
+  font-size: 14px;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+}
+.voice-user-item .vu-avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+}
+
+.sidebar-members-section .member-item,
+.member-item {
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+}
+.member-item .mi-avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+}
+.member-item .mi-name { font-size: 15px; }
+
+.voice-widget {
+  padding: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.vw-header { font-size: 13px; }
+.vw-timer { font-size: 12px; }
+.vw-controls {
+  gap: 10px;
+  padding: 10px 4px 6px;
+}
+.vw-controls button {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+.user-bar {
+  height: 58px;
+  padding: 0 10px;
+}
+.user-bar .ub-avatar {
+  width: 34px;
+  height: 34px;
+}
+.user-bar .ub-name { font-size: 14px; }
+.user-bar .ub-status { font-size: 12px; }
+
+.chat-header {
+  height: 56px;
+  padding: 0 18px;
+}
+.chat-header .ch-name { font-size: 17px; }
+.chat-header .ch-topic { font-size: 14px; }
+.chat-header .ch-tools button {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+}
+.chat-header .search-input {
+  width: 200px;
+  height: var(--control-height-sm);
+  border-radius: 10px;
+  font-size: 13px;
+  padding: 0 12px;
+}
+.chat-header .search-input:focus { width: 260px; }
+
+.messages-container {
+  padding-top: 14px;
+}
+.message .msg-author { font-size: 15px; }
+.message .msg-time { font-size: 12px; }
+.message .msg-text {
+  font-size: 15px;
+  line-height: 1.52;
+}
+
+.message-input-wrap { padding: 0 18px 20px; }
+.message-input-box {
+  border-radius: 14px;
+  padding: 2px 4px;
+}
+.input-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+.msg-textarea {
+  font-size: 15px;
+  min-height: 42px;
+  line-height: 1.45;
+  padding: 10px 6px;
+}
+
+.settings-backdrop {
+  background: rgba(8, 10, 14, 0.78);
+}
+.settings-modal {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 26px 70px rgba(4, 8, 14, 0.55);
+}
+.settings-sidebar { width: 250px; }
+.settings-nav-item {
+  font-size: 15px;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+.settings-content h1 { font-size: 24px; }
+.setting-label { font-size: 15px; }
+.setting-desc { font-size: 14px; }
+.settings-input,
+.ac-btn,
+.add-friend-input,
+.friends-search,
+.dm-search,
+.ep-search,
+.gp-search {
+  min-height: var(--control-height-md);
+  border-radius: var(--radius-md);
+}
+
+.context-menu {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 42px rgba(4, 8, 14, 0.42);
+  overflow: hidden;
+}
+.context-menu-item {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.toast {
+  border-radius: 12px;
+  padding: 13px 20px;
+  font-size: 14px;
+  box-shadow: 0 12px 30px rgba(4, 8, 14, 0.35);
+}
+
+.video-username {
+  font-size: 14px;
+  border-radius: 10px;
+}
+
+.video-grid.focus-mode .video-focus-main .video-tile-overlay {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.quick-switch-modal {
+  border-radius: 16px;
+  box-shadow: 0 18px 50px rgba(4, 8, 14, 0.52);
+}
+
 /* ═══ Responsive ═══ */
 @media (max-width: 1200px) {
   .member-list { width: 0; padding: 0; overflow: hidden; }

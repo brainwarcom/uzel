@@ -121,6 +121,18 @@ function showUserVolumeMenu(
   });
 }
 
+function showUserVolumeMenuNearElement(
+  userId: number,
+  username: string,
+  anchor: HTMLElement,
+  signal: AbortSignal,
+): void {
+  const rect = anchor.getBoundingClientRect();
+  const x = Math.round(rect.right + 8);
+  const y = Math.round(rect.top + Math.min(24, rect.height / 2));
+  showUserVolumeMenu(userId, username, x, y, signal);
+}
+
 export interface ChannelReorderData {
   readonly channelId: number;
   readonly newPosition: number;
@@ -305,18 +317,32 @@ function renderVoiceChannelItem(
       // Right-click for per-user volume (skip for own user)
       const currentUser = getCurrentUser();
       if (currentUser === null || currentUser.id !== user.userId) {
+        // Left-click opens the same per-user volume editor for faster access.
+        row.addEventListener("click", (e) => {
+          if (e.button !== 0) return;
+          e.preventDefault();
+          e.stopPropagation();
+          showUserVolumeMenuNearElement(
+            user.userId,
+            user.username || "Неизвестный",
+            row,
+            signal,
+          );
+        }, { signal });
+
         row.addEventListener("contextmenu", (e) => {
           e.preventDefault();
           e.stopPropagation();
           showUserVolumeMenu(user.userId, user.username || "Неизвестный", e.clientX, e.clientY, signal);
         }, { signal });
+
+        row.style.cursor = "pointer";
       }
 
-      // Click to watch stream (if user has camera or screenshare)
+      // Double-click to watch stream (if user has camera or screenshare).
+      // Single click is reserved for per-user volume.
       if (onWatchStream !== undefined && (user.camera || user.screenshare)) {
-        row.addEventListener("click", (e) => {
-          // Don't trigger if the right-click menu is open
-          if (e.button !== 0) return;
+        row.addEventListener("dblclick", (e) => {
           e.stopPropagation();
           const tileId = user.screenshare
             ? user.userId + SCREENSHARE_TILE_ID_OFFSET

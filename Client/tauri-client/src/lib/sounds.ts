@@ -41,8 +41,16 @@ function playToneSequence(
 
 export function playMessageSound(): void {
   playToneSequence([
-    { freq: 900, duration: 0.08, gain: 0.18 },
-    { freq: 680, duration: 0.12, gain: 0.12 },
+    { freq: 880, duration: 0.05, gain: 0.12 },
+    { freq: 720, duration: 0.08, gain: 0.1 },
+  ]);
+}
+
+export function playNotificationSound(): void {
+  playToneSequence([
+    { freq: 620, duration: 0.06, gain: 0.12 },
+    { freq: 840, duration: 0.08, gain: 0.14 },
+    { freq: 1120, duration: 0.1, gain: 0.13 },
   ]);
 }
 

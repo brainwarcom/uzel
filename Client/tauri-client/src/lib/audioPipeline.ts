@@ -67,10 +67,15 @@ export class AudioPipeline {
     const micPub = this.room.localParticipant.getTrackPublication(Track.Source.Microphone);
     if (micPub?.track === undefined) return;
     if (micPub.track.getProcessor() !== undefined) return;
-    const processor = createRNNoiseProcessor();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- LocalTrack.setProcessor uses wide generic, but AudioProcessorOptions is guaranteed at runtime with webAudioMix
-    await micPub.track.setProcessor(processor as any);
-    log.info("RNNoise processor attached to mic track");
+    try {
+      const processor = createRNNoiseProcessor();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- LocalTrack.setProcessor uses wide generic, but AudioProcessorOptions is guaranteed at runtime with webAudioMix
+      await micPub.track.setProcessor(processor as any);
+      log.info("RNNoise processor attached to mic track");
+    } catch (err) {
+      // Non-fatal: the mic should keep working even if RNNoise fails.
+      log.warn("Failed to attach RNNoise processor", err);
+    }
   }
 
   /** Remove RNNoise processor from the local mic track. Safe to call if none attached. */
@@ -79,8 +84,12 @@ export class AudioPipeline {
     const micPub = this.room.localParticipant.getTrackPublication(Track.Source.Microphone);
     if (micPub?.track === undefined) return;
     if (micPub.track.getProcessor() === undefined) return;
-    await micPub.track.stopProcessor();
-    log.info("RNNoise processor removed from mic track");
+    try {
+      await micPub.track.stopProcessor();
+      log.info("RNNoise processor removed from mic track");
+    } catch (err) {
+      log.warn("Failed to remove RNNoise processor", err);
+    }
   }
 
   // --- Pipeline setup/teardown ---

@@ -12,6 +12,7 @@ import { createLogger } from "./logger";
 const log = createLogger("ptt");
 
 let listening = false;
+let pttPressedAtLeastOnce = false;
 
 // Well-known virtual key code names for display
 const VK_NAMES: ReadonlyMap<number, string> = new Map([
@@ -47,6 +48,7 @@ export function vkName(vk: number): string {
 export async function initPtt(): Promise<void> {
   const vk = loadPref<number>("pttVk", 0);
   if (vk === 0) return;
+  pttPressedAtLeastOnce = false;
 
   try {
     const { invoke } = await import("@tauri-apps/api/core");
@@ -61,9 +63,20 @@ export async function initPtt(): Promise<void> {
       // Only toggle mute when in a voice channel
       const channelId = voiceStore.getState().currentChannelId;
       if (channelId === null) return;
-
-      setMuted(!event.payload);
-      log.debug(event.payload ? "PTT pressed — unmuted" : "PTT released — muted");
+      // Some environments may emit a "released" state before the first real press.
+      // Ignore early releases so we don't get stuck muted unexpectedly.
+      if (event.payload) {
+        pttPressedAtLeastOnce = true;
+        setMuted(false);
+        log.debug("PTT pressed — unmuted");
+        return;
+      }
+      if (!pttPressedAtLeastOnce) {
+        log.debug("PTT released ignored before first press");
+        return;
+      }
+      setMuted(true);
+      log.debug("PTT released — muted");
     });
 
     listening = true;
@@ -81,6 +94,7 @@ export async function stopPtt(): Promise<void> {
     const { invoke } = await import("@tauri-apps/api/core");
     await invoke("ptt_stop");
     listening = false;
+    pttPressedAtLeastOnce = false;
     log.info("PTT stopped");
   } catch {
     // ignore

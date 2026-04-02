@@ -13,6 +13,8 @@ const log = createLogger("deviceManager");
 
 /** Debounce interval for device change events (ms). */
 const DEVICE_CHANGE_DEBOUNCE_MS = 500;
+/** Deduplicate repeated user-facing error/toast messages during noisy device events. */
+const MESSAGE_DEDUP_MS = 2500;
 
 export class DeviceManager {
   private room: Room | null = null;
@@ -21,6 +23,16 @@ export class DeviceManager {
   private onToast: ((message: string) => void) | null = null;
   private deviceChangeHandler: (() => void) | null = null;
   private deviceChangeTimer: ReturnType<typeof setTimeout> | null = null;
+  private lastUiMessageAt = new Map<string, number>();
+
+  private emitUiMessage(message: string, kind: "error" | "toast"): void {
+    const now = Date.now();
+    const lastAt = this.lastUiMessageAt.get(message) ?? 0;
+    if (now - lastAt < MESSAGE_DEDUP_MS) return;
+    this.lastUiMessageAt.set(message, now);
+    if (kind === "error") this.onErrorCallback?.(message);
+    else this.onToast?.(message);
+  }
 
   setRoom(room: Room | null): void {
     this.room = room;
@@ -90,12 +102,12 @@ export class DeviceManager {
             this.audioPipeline?.setupAudioPipeline();
           } catch (pipelineErr) {
             log.warn("Audio pipeline setup failed after device fallback", pipelineErr);
-            this.onToast?.("Ошибка аудиопайплайна после переключения устройства");
+            this.emitUiMessage("Ошибка аудиопайплайна после переключения устройства", "toast");
           }
-          this.onToast?.("Аудиоустройство отключено — переключено на устройство по умолчанию");
+          this.emitUiMessage("Аудиоустройство отключено — переключено на устройство по умолчанию", "toast");
         } catch (err) {
           log.error("Failed to fallback to default input device", err);
-          this.onErrorCallback?.("Нет доступного устройства ввода звука");
+          this.emitUiMessage("Нет доступного устройства ввода звука", "error");
         }
       }
 
@@ -105,7 +117,7 @@ export class DeviceManager {
       if (savedOutput !== "" && !outputDevices.some(d => d.deviceId === savedOutput)) {
         log.warn("Saved audio output device removed — falling back to default", { savedOutput });
         savePref("audioOutputDevice", "");
-        this.onToast?.("Устройство вывода звука отключено — переключено на устройство по умолчанию");
+        this.emitUiMessage("Устройство вывода звука отключено — переключено на устройство по умолчанию", "toast");
       }
     } catch (err) {
       log.warn("Failed to enumerate devices after change", err);
@@ -117,6 +129,8 @@ export class DeviceManager {
       log.debug("Skipping input device switch — no active voice session");
       return;
     }
+
+    // Step 1 (critical): switch the microphone source itself.
     try {
       if (deviceId) {
         await this.room.switchActiveDevice("audioinput", deviceId);
@@ -124,25 +138,38 @@ export class DeviceManager {
         await this.room.localParticipant.setMicrophoneEnabled(false);
         await this.room.localParticipant.setMicrophoneEnabled(true);
       }
-      // Rebuild audio pipeline (source track changed after device switch)
-      try {
-        this.audioPipeline?.setupAudioPipeline();
-      } catch (pipelineErr) {
-        log.warn("Audio pipeline setup failed after input device switch", pipelineErr);
-        this.onToast?.("Ошибка аудиопайплайна после переключения устройства");
-      }
-      // Re-apply or remove RNNoise processor based on current setting
-      const enhancedNS = loadPref<boolean>("enhancedNoiseSuppression", false);
-      if (enhancedNS) {
-        await this.audioPipeline?.applyNoiseSuppressor();
-      } else {
-        await this.audioPipeline?.removeNoiseSuppressor();
-      }
-      log.info("Switched input device", { deviceId });
     } catch (err) {
       log.error("Failed to switch input device", err);
-      this.onErrorCallback?.("Не удалось переключить микрофон");
+      this.emitUiMessage("Не удалось переключить микрофон", "error");
+      return;
     }
+
+    // Step 2 (non-critical): rebuild local processing graph.
+    try {
+      this.audioPipeline?.setupAudioPipeline();
+    } catch (pipelineErr) {
+      log.warn("Audio pipeline setup failed after input device switch", pipelineErr);
+      this.emitUiMessage("Ошибка аудиопайплайна после переключения устройства", "toast");
+    }
+
+    // Step 3 (non-critical): re-apply RNNoise when enabled.
+    const enhancedNS = loadPref<boolean>("enhancedNoiseSuppression", false);
+    if (enhancedNS) {
+      try {
+        await this.audioPipeline?.applyNoiseSuppressor();
+      } catch (nsErr) {
+        log.warn("RNNoise re-apply failed after input device switch", nsErr);
+        this.emitUiMessage("Шумоподавление временно недоступно для этого микрофона", "toast");
+      }
+    } else {
+      try {
+        await this.audioPipeline?.removeNoiseSuppressor();
+      } catch (nsErr) {
+        log.warn("RNNoise removal failed after input device switch", nsErr);
+      }
+    }
+
+    log.info("Switched input device", { deviceId });
   }
 
   async switchOutputDevice(deviceId: string): Promise<void> {

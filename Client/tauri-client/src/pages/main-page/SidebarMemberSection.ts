@@ -4,7 +4,8 @@
  * collapsed state and height to localStorage.
  */
 
-import { createElement, appendChildren } from "@lib/dom";
+import { createElement, clearChildren, appendChildren } from "@lib/dom";
+import { createIcon } from "@lib/icons";
 import type { MountableComponent } from "@lib/safe-render";
 import { createMemberList } from "@components/MemberList";
 import { authStore } from "@stores/auth.store";
@@ -53,7 +54,8 @@ export function createSidebarMemberSection(opts: SidebarMemberSectionOptions): S
 
   // --- Header ---
   const memberHeader = createElement("div", { class: "category sidebar-members-header" });
-  const memberArrow = createElement("span", { class: "category-arrow" }, "\u25BC");
+  const memberArrow = createElement("span", { class: "category-arrow" });
+  memberArrow.appendChild(createIcon("chevron-down", 12));
   const memberLabelEl = createElement("span", { class: "category-name" }, "УЧАСТНИКИ");
   appendChildren(memberHeader, memberArrow, memberLabelEl);
   memberListContainer.appendChild(memberHeader);
@@ -104,7 +106,8 @@ export function createSidebarMemberSection(opts: SidebarMemberSectionOptions): S
 
   function applyMembersCollapsed(): void {
     memberHeader.classList.toggle("collapsed", membersCollapsed);
-    memberArrow.textContent = membersCollapsed ? "\u25B6" : "\u25BC";
+    clearChildren(memberArrow);
+    memberArrow.appendChild(createIcon(membersCollapsed ? "chevron-right" : "chevron-down", 12));
     memberContent.style.display = membersCollapsed ? "none" : "";
     resizeHandle.style.display = membersCollapsed ? "none" : "";
     if (membersCollapsed) {

@@ -16,6 +16,16 @@ class RNNoiseProcessor extends AudioWorkletProcessor {
 
     /** @type {WebAssembly.Instance | null} */
     this._instance = null;
+    /** @type {((...args: any[]) => any) | null} */
+    this._rnnoiseCreate = null;
+    /** @type {((...args: any[]) => any) | null} */
+    this._rnnoiseDestroy = null;
+    /** @type {((...args: any[]) => any) | null} */
+    this._rnnoiseProcessFrame = null;
+    /** @type {((...args: any[]) => any) | null} */
+    this._malloc = null;
+    /** @type {((...args: any[]) => any) | null} */
+    this._free = null;
     /** @type {number} */
     this._state = 0;
     /** @type {number} */
@@ -68,15 +78,8 @@ class RNNoiseProcessor extends AudioWorkletProcessor {
   async _initWasm(wasmBytes) {
     let allocated = false;
     try {
-      // Basic validation: check for expected exports
       const module = await WebAssembly.compile(wasmBytes);
-      const expectedExports = ['rnnoise_create', 'rnnoise_destroy', 'rnnoise_process_frame', 'malloc', 'free'];
       const availableExports = WebAssembly.Module.exports(module).map(exp => exp.name);
-      
-      const hasRequiredExports = expectedExports.every(exp => availableExports.includes(exp));
-      if (!hasRequiredExports) {
-        throw new Error('WASM module missing required RNNoise exports');
-      }
 
       const memory = new WebAssembly.Memory({ initial: WASM_MEMORY_INITIAL_PAGES });
       const importObject = {
@@ -97,13 +100,32 @@ class RNNoiseProcessor extends AudioWorkletProcessor {
       // Try instantiating with the raw WASM bytes
       const { instance } = await WebAssembly.instantiate(wasmBytes, importObject);
       this._instance = instance;
-      this._heapF32 = new Float32Array(memory.buffer);
-
-      // Call RNNoise C API
       const exports = instance.exports;
-      this._state = exports.rnnoise_create();
-      this._inputPtr = exports.malloc(FRAME_SIZE * 4);
-      this._outputPtr = exports.malloc(FRAME_SIZE * 4);
+
+      const resolveFn = (names) => {
+        for (const name of names) {
+          const fn = exports[name];
+          if (typeof fn === "function") return fn;
+        }
+        return null;
+      };
+
+      this._rnnoiseCreate = resolveFn(["rnnoise_create", "_rnnoise_create", "f"]);
+      this._rnnoiseDestroy = resolveFn(["rnnoise_destroy", "_rnnoise_destroy", "h"]);
+      this._rnnoiseProcessFrame = resolveFn(["rnnoise_process_frame", "_rnnoise_process_frame", "j"]);
+      this._malloc = resolveFn(["malloc", "_malloc", "g"]);
+      this._free = resolveFn(["free", "_free", "i"]);
+
+      const exportedMemory = exports.memory ?? exports.c;
+      this._heapF32 = new Float32Array((exportedMemory ?? memory).buffer);
+
+      if (!this._rnnoiseCreate || !this._rnnoiseDestroy || !this._rnnoiseProcessFrame || !this._malloc || !this._free) {
+        throw new Error(`WASM exports not compatible. Available: ${availableExports.join(",")}`);
+      }
+
+      this._state = this._rnnoiseCreate();
+      this._inputPtr = this._malloc(FRAME_SIZE * 4);
+      this._outputPtr = this._malloc(FRAME_SIZE * 4);
       allocated = true;
 
       this._ready = true;
@@ -112,10 +134,9 @@ class RNNoiseProcessor extends AudioWorkletProcessor {
       // Cleanup allocated memory on failure
       if (allocated && this._instance) {
         try {
-          const exports = this._instance.exports;
-          if (this._inputPtr) exports.free(this._inputPtr);
-          if (this._outputPtr) exports.free(this._outputPtr);
-          if (this._state) exports.rnnoise_destroy(this._state);
+          if (this._inputPtr && this._free) this._free(this._inputPtr);
+          if (this._outputPtr && this._free) this._free(this._outputPtr);
+          if (this._state && this._rnnoiseDestroy) this._rnnoiseDestroy(this._state);
         } catch (cleanupErr) {
           // Log cleanup errors but don't override original error
           console.warn('Failed to cleanup WASM memory:', cleanupErr);
@@ -132,8 +153,7 @@ class RNNoiseProcessor extends AudioWorkletProcessor {
    * @private
    */
   _processFrame() {
-    if (!this._instance || !this._heapF32) return;
-    const exports = this._instance.exports;
+    if (!this._instance || !this._heapF32 || !this._rnnoiseProcessFrame) return;
 
     const inOff = this._inputPtr / 4;
     const outOff = this._outputPtr / 4;
@@ -149,7 +169,7 @@ class RNNoiseProcessor extends AudioWorkletProcessor {
       this._heapF32[inOff + i] = this._inputRing[i] * RN_NOISE_INT16_SCALE;
     }
 
-    exports.rnnoise_process_frame(this._state, this._outputPtr, this._inputPtr);
+    this._rnnoiseProcessFrame(this._state, this._outputPtr, this._inputPtr);
 
     // Write to contiguous buffer
     const writeStart = this._outWritePos * FRAME_SIZE;
@@ -174,10 +194,9 @@ class RNNoiseProcessor extends AudioWorkletProcessor {
   _cleanup() {
     if (this._instance && this._state) {
       try {
-        const exports = this._instance.exports;
-        exports.rnnoise_destroy(this._state);
-        exports.free(this._inputPtr);
-        exports.free(this._outputPtr);
+        if (this._rnnoiseDestroy) this._rnnoiseDestroy(this._state);
+        if (this._free && this._inputPtr) this._free(this._inputPtr);
+        if (this._free && this._outputPtr) this._free(this._outputPtr);
       } catch (err) {
         console.warn('RNNoise cleanup failed:', err);
         // Continue cleanup even if individual steps fail
@@ -186,6 +205,11 @@ class RNNoiseProcessor extends AudioWorkletProcessor {
     this._ready = false;
     this._destroyed = true;
     this._state = 0;
+    this._rnnoiseCreate = null;
+    this._rnnoiseDestroy = null;
+    this._rnnoiseProcessFrame = null;
+    this._malloc = null;
+    this._free = null;
   }
 
   /**

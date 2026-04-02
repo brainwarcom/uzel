@@ -5,6 +5,7 @@
  */
 
 import { createElement, setText, clearChildren, appendChildren } from "@lib/dom";
+import { createIcon } from "@lib/icons";
 import { dmStore } from "@stores/dm.store";
 import type { DmChannel } from "@stores/dm.store";
 import { setSidebarMode } from "@stores/ui.store";
@@ -41,7 +42,8 @@ export function createSidebarDmSection(opts: SidebarDmSectionOptions): SidebarDm
 
   // --- Header ---
   const dmHeader = createElement("div", { class: "category" });
-  const dmArrow = createElement("span", { class: "category-arrow" }, "\u25BC");
+  const dmArrow = createElement("span", { class: "category-arrow" });
+  dmArrow.appendChild(createIcon("chevron-down", 12));
   const dmLabelEl = createElement("span", { class: "category-name" }, "DIRECT MESSAGES");
   const dmUnreadBadge = createElement("span", { class: "dm-header-unread-badge" });
   const dmAddBtn = createElement("button", { class: "category-add-btn", title: "New DM" }, "+");
@@ -128,7 +130,8 @@ export function createSidebarDmSection(opts: SidebarDmSectionOptions): SidebarDm
   dmHeader.addEventListener("click", () => {
     dmCollapsed = !dmCollapsed;
     dmHeader.classList.toggle("collapsed", dmCollapsed);
-    dmArrow.textContent = dmCollapsed ? "\u25B6" : "\u25BC";
+    clearChildren(dmArrow);
+    dmArrow.appendChild(createIcon(dmCollapsed ? "chevron-right" : "chevron-down", 12));
     dmList.style.display = dmCollapsed ? "none" : "";
     viewAllBtn.style.display = dmCollapsed ? "none" : (dmStore.getState().channels.length > 3 ? "" : "none");
   });

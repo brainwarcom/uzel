@@ -75,6 +75,15 @@ async function createWorkletPipeline(
   inputTrack: MediaStreamTrack,
   audioContext: AudioContext,
 ): Promise<ProcessingPipeline> {
+  if (audioContext === null || audioContext === undefined) {
+    throw new Error("AudioContext is missing for RNNoise worklet pipeline");
+  }
+  if (typeof audioContext.createMediaStreamSource !== "function") {
+    throw new Error("AudioContext does not support createMediaStreamSource");
+  }
+  if (audioContext.audioWorklet === undefined) {
+    throw new Error("AudioContext audioWorklet is unavailable");
+  }
   await audioContext.audioWorklet.addModule("/rnnoise-worklet.js");
   const wasmResponse = await fetch("/rnnoise.wasm");
   const wasmBytes = await wasmResponse.arrayBuffer();
@@ -118,6 +127,12 @@ async function createScriptProcessorPipeline(
   inputTrack: MediaStreamTrack,
   audioContext: AudioContext,
 ): Promise<ProcessingPipeline> {
+  if (audioContext === null || audioContext === undefined) {
+    throw new Error("AudioContext is missing for RNNoise script pipeline");
+  }
+  if (typeof audioContext.createMediaStreamSource !== "function") {
+    throw new Error("AudioContext does not support createMediaStreamSource");
+  }
   const wasmModule = await loadRNNoise();
   const rnnoiseState = wasmModule._rnnoise_create();
   const inputPtr = wasmModule._malloc(RNNOISE_FRAME_SIZE * 4);
@@ -237,6 +252,9 @@ export function createRNNoiseProcessor(): TrackProcessor<Track.Kind.Audio, Audio
     async init(opts: AudioProcessorOptions): Promise<void> {
       log.debug("RNNoise processor init", { audioWorkletSupported: supportsAudioWorklet() });
       const ctx = opts.audioContext;
+      if (ctx === null || ctx === undefined) {
+        throw new Error("RNNoise init failed: missing AudioContext");
+      }
 
       if (supportsAudioWorklet()) {
         try {

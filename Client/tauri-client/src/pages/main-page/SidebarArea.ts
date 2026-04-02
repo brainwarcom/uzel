@@ -6,6 +6,7 @@
  */
 
 import { createElement, setText, clearChildren, appendChildren } from "@lib/dom";
+import { createIcon } from "@lib/icons";
 import type { MountableComponent } from "@lib/safe-render";
 import type { WsClient } from "@lib/ws";
 import type { ApiClient } from "@lib/api";
@@ -518,7 +519,8 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
       // --- DM section (above channels, below server header) ---
       const dmSection = createElement("div", { class: "sidebar-dm-section" });
       const dmHeader = createElement("div", { class: "category" });
-      const dmArrow = createElement("span", { class: "category-arrow" }, "\u25BC");
+      const dmArrow = createElement("span", { class: "category-arrow" });
+      dmArrow.appendChild(createIcon("chevron-down", 12));
       const dmLabelEl = createElement("span", { class: "category-name" }, "ЛИЧНЫЕ СООБЩЕНИЯ");
       const dmUnreadBadge = createElement("span", { class: "dm-header-unread-badge" });
       const dmAddBtn = createElement("button", { class: "category-add-btn", title: "Новое ЛС" }, "+");
@@ -603,7 +605,8 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
       dmHeader.addEventListener("click", () => {
         dmCollapsed = !dmCollapsed;
         dmHeader.classList.toggle("collapsed", dmCollapsed);
-        dmArrow.textContent = dmCollapsed ? "\u25B6" : "\u25BC";
+        clearChildren(dmArrow);
+        dmArrow.appendChild(createIcon(dmCollapsed ? "chevron-right" : "chevron-down", 12));
         dmList.style.display = dmCollapsed ? "none" : "";
         viewAllBtn.style.display = dmCollapsed ? "none" : (dmStore.getState().channels.length > 5 ? "" : "none");
       });
@@ -637,7 +640,8 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
 
       // Member header (styled like category headers)
       const memberHeader = createElement("div", { class: "category sidebar-members-header" });
-      const memberArrow = createElement("span", { class: "category-arrow" }, "\u25BC");
+      const memberArrow = createElement("span", { class: "category-arrow" });
+      memberArrow.appendChild(createIcon("chevron-down", 12));
       const memberLabelEl = createElement("span", { class: "category-name" }, "УЧАСТНИКИ");
       appendChildren(memberHeader, memberArrow, memberLabelEl);
       memberListContainer.appendChild(memberHeader);
@@ -688,7 +692,8 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
 
       function applyMembersCollapsed(): void {
         memberHeader.classList.toggle("collapsed", membersCollapsed);
-        memberArrow.textContent = membersCollapsed ? "\u25B6" : "\u25BC";
+        clearChildren(memberArrow);
+        memberArrow.appendChild(createIcon(membersCollapsed ? "chevron-right" : "chevron-down", 12));
         memberContent.style.display = membersCollapsed ? "none" : "";
         resizeHandle.style.display = membersCollapsed ? "none" : "";
         if (membersCollapsed) {

@@ -885,12 +885,21 @@
 }
 
 .message-input-box {
-  background: var(--bg-input); border-radius: var(--radius-md);
+  background: linear-gradient(180deg, rgba(58, 67, 83, 0.96), rgba(49, 57, 71, 0.96));
+  border-radius: var(--radius-md);
   display: flex; align-items: flex-end; padding: 4px;
-  border: 1px solid transparent;
-  transition: border-color 0.15s ease;
+  border: 1px solid rgba(162, 178, 204, 0.34);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
-.message-input-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.message-input-box:hover {
+  border-color: rgba(177, 192, 218, 0.5);
+  background: linear-gradient(180deg, rgba(62, 72, 90, 0.98), rgba(52, 61, 77, 0.98));
+}
+.message-input-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
 .message-input-box.reply-mode { border-radius: 0 0 var(--radius-md) var(--radius-md); }
 .input-btn {
   width: 36px; height: 36px; border-radius: var(--radius-sm);
@@ -904,7 +913,7 @@
   font-size: 14px; resize: none; padding: 8px 4px;
   min-height: 36px; max-height: 200px; line-height: 1.4;
 }
-.msg-textarea::placeholder { color: var(--text-micro); }
+.msg-textarea::placeholder { color: #9aa8c2; }
 
 /* ── Member List ── */
 .member-list {
@@ -1810,17 +1819,26 @@
 
 /* ═══ Compact Mode ═══ */
 /* Messages: hide avatars, inline timestamp + author, tighter spacing */
-.compact-mode .message { padding: 2px 16px 2px 40px; min-height: 20px; margin-top: 4px; }
-.compact-mode .message.grouped { min-height: 16px; margin-top: 0; }
+.compact-mode .message { padding: 3px 16px 3px 56px; min-height: 24px; margin-top: 4px; }
+.compact-mode .message.grouped { min-height: 20px; margin-top: 1px; }
 .compact-mode .message .msg-avatar { width: 24px; height: 24px; font-size: 10px; top: 2px; left: 8px; }
 .compact-mode .message.grouped .msg-avatar { display: none; }
 .compact-mode .message .msg-hover-time {
   display: none;
 }
 .compact-mode .message.grouped .msg-hover-time { display: block; }
+.compact-mode .message .msg-hover-time {
+  left: 10px;
+  width: 40px;
+  text-align: right;
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: nowrap;
+  transform: translateY(-48%);
+}
 .compact-mode .message .msg-header { display: flex; }
 .compact-mode .message.grouped .msg-header { display: none; }
-.compact-mode .message .msg-text { line-height: 1.25; font-size: 13px; }
+.compact-mode .message .msg-text { line-height: 1.35; font-size: 13px; }
 .compact-mode .message .msg-time { display: none; }
 /* Reactions and embeds */
 .compact-mode .msg-reactions { margin-top: 2px; }

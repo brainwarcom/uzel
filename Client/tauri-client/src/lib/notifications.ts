@@ -8,7 +8,7 @@ import { authStore } from "@stores/auth.store";
 import { channelsStore } from "@stores/channels.store";
 import type { ChatMessagePayload } from "./types";
 import { createLogger } from "./logger";
-import { playMessageSound } from "./sounds";
+import { playMessageSound, playNotificationSound } from "./sounds";
 
 const log = createLogger("notifications");
 
@@ -43,10 +43,9 @@ export function notifyIncomingMessage(payload: ChatMessagePayload): void {
   // Don't notify for own messages
   if (currentUser !== null && payload.user.id === currentUser.id) return;
 
-  // Always allow chat sound for incoming messages (if enabled), even when the
-  // user is focused in the same channel.
+  // Message sound: always for incoming messages (if enabled), even in active channel.
   if (loadPref<boolean>("notificationSounds", true)) {
-    playNotificationSound();
+    playMessageSound();
   }
 
   // Skip desktop notification/taskbar flash if focused in active channel.
@@ -72,6 +71,11 @@ export function notifyIncomingMessage(payload: ChatMessagePayload): void {
   // Flash taskbar
   if (loadPref<boolean>("flashTaskbar", true)) {
     flashTaskbar();
+  }
+
+  // Notification sound: separate tone for desktop/background alert.
+  if (loadPref<boolean>("notificationSounds", true)) {
+    playNotificationSound();
   }
 
 }
@@ -123,15 +127,3 @@ function flashTaskbar(): void {
   })();
 }
 
-// Simple notification sound using Web Audio API
-let notifAudioCtx: AudioContext | null = null;
-
-/** Play a brief notification chime. */
-function playNotificationSound(): void {
-  try {
-    if (notifAudioCtx === null) notifAudioCtx = new AudioContext();
-    playMessageSound();
-  } catch {
-    log.debug("Notification sound not available");
-  }
-}

@@ -37,7 +37,7 @@ export function createEditChannelModal(
 
     // Header
     const header = createElement("div", { class: "modal-header" });
-    const title = createElement("h3", {}, "Edit Channel");
+    const title = createElement("h3", {}, "Изменить канал");
     const closeBtn = createElement("button", {
       class: "modal-close",
       type: "button",
@@ -52,7 +52,7 @@ export function createEditChannelModal(
 
     // Channel type (read-only)
     const typeGroup = createElement("div", { class: "form-group" });
-    const typeLabel = createElement("label", { class: "form-label" }, "Type");
+    const typeLabel = createElement("label", { class: "form-label" }, "Тип");
     const typeDisplay = createElement("div", {
       class: "form-input",
       style: "opacity: 0.7; cursor: default;",
@@ -62,7 +62,7 @@ export function createEditChannelModal(
 
     // Channel name
     const nameGroup = createElement("div", { class: "form-group" });
-    const nameLabel = createElement("label", { class: "form-label" }, "Name");
+    const nameLabel = createElement("label", { class: "form-label" }, "Название");
     const nameInput = createElement("input", {
       class: "form-input",
       type: "text",
@@ -86,7 +86,7 @@ export function createEditChannelModal(
     const cancelBtn = createElement(
       "button",
       { class: "btn-modal-cancel", type: "button" },
-      "Cancel",
+      "Отмена",
     );
     cancelBtn.addEventListener("click", onClose, { signal: ac.signal });
 
@@ -97,7 +97,7 @@ export function createEditChannelModal(
         type: "button",
         "data-testid": "edit-channel-submit",
       },
-      "Save Changes",
+      "Сохранить",
     );
 
     saveBtn.addEventListener(
@@ -106,7 +106,7 @@ export function createEditChannelModal(
         const name = nameInput.value.trim();
         if (name === "") {
           errorEl.style.display = "block";
-          setText(errorEl, "Channel name is required");
+          setText(errorEl, "Введите название канала");
           nameInput.classList.add("error");
           return;
         }
@@ -114,7 +114,7 @@ export function createEditChannelModal(
         errorEl.style.display = "none";
         nameInput.classList.remove("error");
         saveBtn.setAttribute("disabled", "true");
-        setText(saveBtn, "Saving...");
+        setText(saveBtn, "Сохранение...");
 
         try {
           await onSave({ name });
@@ -122,10 +122,10 @@ export function createEditChannelModal(
           errorEl.style.display = "block";
           setText(
             errorEl,
-            err instanceof Error ? err.message : "Failed to update channel",
+            err instanceof Error ? err.message : "Не удалось обновить канал",
           );
           saveBtn.removeAttribute("disabled");
-          setText(saveBtn, "Save Changes");
+          setText(saveBtn, "Сохранить");
         }
       },
       { signal: ac.signal },

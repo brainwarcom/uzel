@@ -41,7 +41,7 @@ export interface ConnectPageCallbacks {
 // ---------------------------------------------------------------------------
 
 const DEFAULT_PROFILES: readonly SimpleProfile[] = [
-  { name: "Local Server", host: "localhost:8443" },
+  { name: "Локальный сервер", host: "localhost:8443" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -117,7 +117,7 @@ export function createConnectPage(
     const logoImg = createElement("img", {
       class: "oc-logo",
       src: uzelLogoUrl,
-      alt: "Uzel Logo",
+      alt: "Логотип Uzel",
       width: "80",
       height: "48",
     });
@@ -163,9 +163,9 @@ export function createConnectPage(
       onLogout: () => {},
       onDeleteAccount: () => Promise.resolve(),
       onStatusChange: () => {},
-      onEnableTotp: () => Promise.reject(new Error("Not authenticated")),
-      onConfirmTotp: () => Promise.reject(new Error("Not authenticated")),
-      onDisableTotp: () => Promise.reject(new Error("Not authenticated")),
+      onEnableTotp: () => Promise.reject(new Error("Не авторизован")),
+      onConfirmTotp: () => Promise.reject(new Error("Не авторизован")),
+      onDisableTotp: () => Promise.reject(new Error("Не авторизован")),
     });
     settingsOverlay.mount(rootEl);
 

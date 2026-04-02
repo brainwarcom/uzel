@@ -33,7 +33,7 @@ export function buildAppearanceTab(signal: AbortSignal): HTMLDivElement {
   const defaultAccent = getDefaultAccent(activeThemeName);
 
   // Theme selector
-  const themeHeader = createElement("h3", {}, "Theme");
+  const themeHeader = createElement("h3", {}, "Тема");
   const themeRow = createElement("div", { class: "theme-options", role: "radiogroup" });
   for (const name of Object.keys(THEMES) as ThemeName[]) {
     const isActive = name === currentTheme;
@@ -72,7 +72,7 @@ export function buildAppearanceTab(signal: AbortSignal): HTMLDivElement {
   appendChildren(section, themeHeader, themeRow);
 
   // Font size slider
-  const fontHeader = createElement("h3", {}, "Font Size");
+  const fontHeader = createElement("h3", {}, "Размер шрифта");
   const fontRow = createElement("div", { class: "slider-row" });
   const fontSlider = createElement("input", {
     class: "settings-slider",
@@ -93,7 +93,7 @@ export function buildAppearanceTab(signal: AbortSignal): HTMLDivElement {
 
   // Compact mode toggle
   const compactRow = createElement("div", { class: "setting-row" });
-  const compactLabel = createElement("span", { class: "setting-label" }, "Compact Mode");
+  const compactLabel = createElement("span", { class: "setting-label" }, "Компактный режим");
   const compactToggle = createToggle(currentCompact, {
     signal,
     onChange: (isNowCompact) => {
@@ -133,7 +133,7 @@ export function buildAppearanceTab(signal: AbortSignal): HTMLDivElement {
     applyAccent(color);
   }
 
-  const accentHeader = createElement("h3", {}, "Accent Color");
+  const accentHeader = createElement("h3", {}, "Цвет акцента");
   const swatchesRow = createElement("div", { class: "accent-swatches" });
 
   // Declare hexInput early so swatch closures can reference it after construction

@@ -110,7 +110,7 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
     const settingsBtn = createElement("button", {
       class: "settings-gear",
       type: "button",
-      "aria-label": "Settings",
+      "aria-label": "Настройки",
     });
     settingsBtn.textContent = "";
     settingsBtn.appendChild(createIcon("settings", 16));
@@ -129,11 +129,11 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
       height: "42",
     });
     const logoTitle = createElement("h1", {}, "Uzel");
-    const logoSubtitle = createElement("p", {}, "Connect to your server");
+    const logoSubtitle = createElement("p", {}, "Подключение к серверу");
     appendChildren(formLogo, logoImg, logoTitle, logoSubtitle);
 
     // Form title
-    formTitle = createElement("h1", {}, "Login");
+    formTitle = createElement("h1", {}, "Вход");
 
     // Error banner (hidden by default via CSS display:none, shown with .visible)
     errorBanner = createElement("div", {
@@ -146,15 +146,15 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
     form.setAttribute("novalidate", "");
 
     // Host
-    const hostGroup = buildFormGroup("host", "Server Address", "text", "localhost:8443");
+    const hostGroup = buildFormGroup("host", "Адрес сервера", "text", "localhost:8443");
     hostInput = qs("input", hostGroup)!;
 
     // Username
-    const usernameGroup = buildFormGroup("username", "Username", "text", "");
+    const usernameGroup = buildFormGroup("username", "Имя пользователя", "text", "");
     usernameInput = qs("input", usernameGroup)!;
 
     // Password
-    const passwordGroup = buildFormGroup("password", "Password", "password", "");
+    const passwordGroup = buildFormGroup("password", "Пароль", "password", "");
     passwordInput = qs("input", passwordGroup)!;
 
     // Remember password checkbox
@@ -166,11 +166,11 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
     const rememberLabel = createElement("label", {
       for: "remember-password",
       class: "remember-password-label",
-    }, "Remember password");
+    }, "Запомнить пароль");
     appendChildren(rememberGroup, rememberPasswordCheckbox, rememberLabel);
 
     // Invite code (register only, hidden by default)
-    inviteGroup = buildFormGroup("invite", "Invite Code", "text", "");
+    inviteGroup = buildFormGroup("invite", "Код приглашения", "text", "");
     inviteGroup.classList.add("form-group--hidden");
     inviteInput = qs("input", inviteGroup)!;
 
@@ -179,7 +179,7 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
       class: "btn-primary",
       type: "submit",
     });
-    submitBtnText = createElement("span", { class: "btn-text" }, "Login");
+    submitBtnText = createElement("span", { class: "btn-text" }, "Вход");
     const spinnerWrapper = createElement("span", { class: "btn-spinner" });
     const spinner = createElement("div", { class: "spinner" });
     spinnerWrapper.appendChild(spinner);
@@ -187,7 +187,7 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
 
     // Toggle mode link
     const formSwitch = createElement("div", { class: "form-switch" });
-    toggleModeBtn = createElement("a", {}, "Need an account? Register");
+    toggleModeBtn = createElement("a", {}, "Нет аккаунта? Зарегистрироваться");
     formSwitch.appendChild(toggleModeBtn);
 
     appendChildren(form, hostGroup, usernameGroup, passwordGroup, rememberGroup, inviteGroup, submitBtn, formSwitch);
@@ -229,7 +229,7 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
       const toggle = createElement("button", {
         class: "password-toggle",
         type: "button",
-        "aria-label": "Toggle password visibility",
+        "aria-label": "Показать или скрыть пароль",
       });
       toggle.appendChild(createIcon("eye", 16));
       toggle.addEventListener(
@@ -254,10 +254,10 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
   function buildTotpOverlay(): HTMLDivElement {
     const overlay = createElement("div", { class: "totp-overlay totp-overlay--hidden" });
     const card = createElement("div", { class: "totp-card" });
-    const title = createElement("h2", { class: "totp-title" }, "Two-Factor Authentication");
+    const title = createElement("h2", { class: "totp-title" }, "Двухфакторная аутентификация");
     const description = createElement("p", {
       class: "totp-subtitle",
-    }, "Enter the 6-digit code from your authenticator app.");
+    }, "Введите 6-значный код из приложения-аутентификатора.");
 
     totpInput = createElement("input", {
       class: "form-input",
@@ -272,12 +272,12 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
     totpSubmitBtn = createElement("button", {
       class: "btn-primary",
       type: "button",
-    }, "Verify");
+    }, "Подтвердить");
 
     const cancelBtn = createElement("button", {
       class: "totp-back",
       type: "button",
-    }, "Cancel");
+    }, "Отмена");
 
     totpSubmitBtn.addEventListener("click", handleTotpSubmit, { signal });
     cancelBtn.addEventListener("click", handleTotpCancel, { signal });
@@ -307,13 +307,13 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
     const spinnerEl = createElement("div", { class: "spinner" });
     spinner.appendChild(spinnerEl);
 
-    const title = createElement("h2", { class: "auto-connect-title" }, "Auto-connecting...");
+    const title = createElement("h2", { class: "auto-connect-title" }, "Автоподключение...");
     autoConnectServerName = createElement("span", { class: "auto-connect-server" });
 
     const cancelBtn = createElement("button", {
       class: "btn-ghost auto-connect-cancel",
       type: "button",
-    }, "Cancel");
+    }, "Отмена");
 
     cancelBtn.addEventListener("click", () => {
       transitionTo("idle");
@@ -365,11 +365,11 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
     submitBtn.classList.toggle("loading", isLoading);
 
     if (formState === "connecting" || formState === "auto-connecting") {
-      setText(submitBtnText, "Connecting\u2026");
+      setText(submitBtnText, "Подключение\u2026");
     } else if (formState === "loading") {
-      setText(submitBtnText, formMode === "login" ? "Logging in\u2026" : "Registering\u2026");
+      setText(submitBtnText, formMode === "login" ? "Вход\u2026" : "Регистрация\u2026");
     } else {
-      setText(submitBtnText, formMode === "login" ? "Login" : "Register");
+      setText(submitBtnText, formMode === "login" ? "Вход" : "Зарегистрироваться");
     }
   }
 
@@ -436,11 +436,11 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
   function handleToggleMode(): void {
     formMode = formMode === "login" ? "register" : "login";
 
-    setText(formTitle, formMode === "login" ? "Login" : "Register");
-    setText(submitBtnText, formMode === "login" ? "Login" : "Register");
+    setText(formTitle, formMode === "login" ? "Вход" : "Зарегистрироваться");
+    setText(submitBtnText, formMode === "login" ? "Вход" : "Зарегистрироваться");
     setText(
       toggleModeBtn,
-      formMode === "login" ? "Need an account? Register" : "Already have an account? Login",
+      formMode === "login" ? "Нет аккаунта? Зарегистрироваться" : "Уже есть аккаунт? Войти",
     );
 
     inviteGroup.classList.toggle("form-group--hidden", formMode === "login");
@@ -457,13 +457,13 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
     const password = passwordInput.value;
 
     if (!host) {
-      return "Server address is required.";
+      return "Укажите адрес сервера.";
     }
     if (!username) {
-      return "Username is required.";
+      return "Укажите имя пользователя.";
     }
     if (!password) {
-      return "Password is required.";
+      return "Укажите пароль.";
     }
     if (password.length < MIN_PASSWORD_LENGTH) {
       return `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
@@ -471,7 +471,7 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
     if (formMode === "register") {
       const inviteCode = inviteInput.value.trim();
       if (!inviteCode) {
-        return "Invite code is required for registration.";
+        return "Для регистрации нужен код приглашения.";
       }
     }
     return null;
@@ -530,16 +530,16 @@ export function createLoginForm(opts: LoginFormOptions): LoginFormApi {
     }
 
     totpSubmitBtn.disabled = true;
-    setText(totpSubmitBtn, "Verifying\u2026");
+    setText(totpSubmitBtn, "Проверка\u2026");
 
     try {
       await onTotpSubmit(code);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Verification failed.";
+      const message = err instanceof Error ? err.message : "Ошибка проверки кода.";
       transitionTo("error", message);
     } finally {
       totpSubmitBtn.disabled = false;
-      setText(totpSubmitBtn, "Verify");
+      setText(totpSubmitBtn, "Подтвердить");
     }
   }
 

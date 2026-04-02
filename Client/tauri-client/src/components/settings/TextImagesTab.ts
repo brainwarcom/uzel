@@ -11,26 +11,26 @@ export function buildTextImagesTab(signal: AbortSignal): HTMLDivElement {
   const toggles: ReadonlyArray<{ key: string; label: string; desc: string; fallback: boolean }> = [
     {
       key: "showLinkPreviews",
-      label: "Link Preview",
-      desc: "Show website previews for links shared in chat",
+      label: "Предпросмотр ссылок",
+      desc: "Показывать предпросмотр сайтов для ссылок в чате",
       fallback: true,
     },
     {
       key: "showEmbeds",
-      label: "Show Embeds",
-      desc: "Display rich embeds in chat messages",
+      label: "Показывать встраивания",
+      desc: "Отображать rich-встраивания в сообщениях",
       fallback: true,
     },
     {
       key: "inlineMedia",
-      label: "Inline Attachment Preview",
-      desc: "Automatically display images, videos, and GIFs inline",
+      label: "Встроенный просмотр вложений",
+      desc: "Автоматически показывать изображения, видео и GIF прямо в чате",
       fallback: true,
     },
     {
       key: "animateGifs",
-      label: "Animate GIFs",
-      desc: "Play GIF animations automatically. When disabled, GIFs show as static images",
+      label: "Анимировать GIF",
+      desc: "Автоматически проигрывать GIF. Если отключено, GIF показываются как статичные изображения",
       fallback: true,
     },
   ];

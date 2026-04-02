@@ -47,6 +47,9 @@ export interface SidebarAreaOptions {
   readonly getRoot: () => HTMLDivElement | null;
   readonly getToast: () => ToastContainer | null;
   readonly onWatchStream?: (userId: number) => void;
+  readonly onVoiceChannelClick?: (channelId: number) => void;
+  readonly onCurrentVoiceChannelClick?: (channelId: number) => void;
+  readonly onCurrentTextChannelClick?: (channelId: number) => void;
 }
 
 export interface SidebarAreaResult {
@@ -109,11 +112,11 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
   const serverIcon = createElement("div", { class: "server-icon-sm" }, "OC");
   const serverInfoCol = createElement("div", { style: "display:flex;flex-direction:column;overflow:hidden;" });
   const serverNameEl = createElement("span", { class: "server-name" },
-    authStore.getState().serverName ?? "Server",
+    authStore.getState().serverName ?? "Сервер",
   );
   const onlineCount = getOnlineMembers().length;
   const serverOnlineEl = createElement("span", { class: "server-online" },
-    `${onlineCount} online`,
+    `${onlineCount} в сети`,
   );
   serverInfoCol.appendChild(serverNameEl);
   serverInfoCol.appendChild(serverOnlineEl);
@@ -124,9 +127,9 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
   const headerInviteCtrl = createInviteManagerController({ api, getRoot });
   const headerInviteBtn = createElement("button", {
     class: "sidebar-invite-btn",
-    title: "Invite people",
+    title: "Пригласить пользователей",
     "data-testid": "invite-btn",
-  }, "Invite");
+  }, "Пригласить");
   headerInviteBtn.addEventListener("click", () => { void headerInviteCtrl.open(); });
   serverHeader.appendChild(headerInviteBtn);
   unsubscribers.push(() => { headerInviteCtrl.cleanup(); });
@@ -134,14 +137,14 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
   sidebarWrapper.appendChild(serverHeader);
 
   // Load per-server collapsed category state from localStorage
-  const initialServerName = authStore.getState().serverName ?? "Server";
+  const initialServerName = authStore.getState().serverName ?? "Сервер";
   loadCollapsedCategories(initialServerName);
 
   // Keep server name in sync with auth store
   const unsubServerName = authStore.subscribeSelector(
     (s) => s.serverName,
     (name) => {
-      setText(serverNameEl, name ?? "Server");
+      setText(serverNameEl, name ?? "Сервер");
     },
   );
   unsubscribers.push(unsubServerName);
@@ -151,7 +154,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
     (s) => s.members,
     () => {
       const count = getOnlineMembers().length;
-      setText(serverOnlineEl, `${count} online`);
+      setText(serverOnlineEl, `${count} в сети`);
     },
   );
   unsubscribers.push(unsubOnlineCount);
@@ -170,10 +173,14 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
   // ---------------------------------------------------------------------------
 
   function buildChannelSidebar(): MountableComponent {
-    const sidebarVoice = createSidebarVoiceCallbacks(ws);
+    const sidebarVoice = createSidebarVoiceCallbacks(ws, {
+      onVoiceChannelClick: opts.onVoiceChannelClick,
+      onCurrentVoiceChannelClick: opts.onCurrentVoiceChannelClick,
+    });
     return createChannelSidebar({
       onVoiceJoin: sidebarVoice.onVoiceJoin,
       onVoiceLeave: sidebarVoice.onVoiceLeave,
+      onCurrentTextChannelClick: opts.onCurrentTextChannelClick,
       onWatchStream: opts.onWatchStream,
       onCreateChannel: (category) => {
         if (activeModal !== null) return;
@@ -185,7 +192,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
               modal.destroy?.();
               activeModal = null;
             } catch (err) {
-              const msg = err instanceof Error ? err.message : "Failed to create channel";
+              const msg = err instanceof Error ? err.message : "Не удалось создать канал";
               getToast()?.show(msg, "error");
             }
           },
@@ -209,7 +216,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
               modal.destroy?.();
               activeModal = null;
             } catch (err) {
-              const msg = err instanceof Error ? err.message : "Failed to update channel";
+              const msg = err instanceof Error ? err.message : "Не удалось обновить канал";
               getToast()?.show(msg, "error");
             }
           },
@@ -232,7 +239,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
               modal.destroy?.();
               activeModal = null;
             } catch (err) {
-              const msg = err instanceof Error ? err.message : "Failed to delete channel";
+              const msg = err instanceof Error ? err.message : "Не удалось удалить канал";
               getToast()?.show(msg, "error");
             }
           },
@@ -309,9 +316,9 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
 
     const overlay = createElement("div", { class: "modal-overlay visible" });
     const modal = createElement("div", { class: "modal dm-member-picker-modal", style: "padding:20px;" });
-    const title = createElement("h3", {}, "New Direct Message");
+    const title = createElement("h3", {}, "Новое личное сообщение");
     const subtitle = createElement("p", { style: "color:var(--text-secondary);font-size:0.85rem;margin:0 0 8px;" },
-      "Select a member to start a conversation");
+      "Выберите участника, чтобы начать диалог");
     const listContainer = createElement("div", {
       class: "dm-member-picker-list",
       style: "max-height:300px;overflow-y:auto;",
@@ -331,7 +338,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
       const nameEl = createElement("span", {}, member.username);
       const statusEl = createElement("span", {
         style: `font-size:0.75rem;margin-left:auto;color:${member.status === "online" ? "var(--green)" : "var(--text-micro)"};`,
-      }, member.status);
+      }, member.status === "online" ? "в сети" : "не в сети");
       appendChildren(item, avatar, nameEl, statusEl);
 
       item.addEventListener("click", () => {
@@ -344,7 +351,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
     const cancelBtn = createElement("button", {
       class: "btn btn-secondary",
       style: "margin-top:12px;width:100%;",
-    }, "Cancel");
+    }, "Отмена");
     cancelBtn.addEventListener("click", () => closePickerModal());
 
     appendChildren(modal, title, subtitle, listContainer, cancelBtn);
@@ -392,7 +399,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
       addDmChannel(dmChannel);
       selectDmConversation(dmChannel);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to create DM";
+      const msg = err instanceof Error ? err.message : "Не удалось создать ЛС";
       getToast()?.show(msg, "error");
     }
   }
@@ -402,7 +409,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
   // ---------------------------------------------------------------------------
 
   function buildDmSidebar(): MountableComponent {
-    const serverName = authStore.getState().serverName ?? "Server";
+    const serverName = authStore.getState().serverName ?? "Сервер";
     const activeDmUserId = uiStore.getState().activeDmUserId;
 
     // Build DM conversations from the DM store (real data)
@@ -412,7 +419,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
       username: dm.recipient.username,
       avatar: dm.recipient.avatar || null,
       status: (dm.recipient.status as DmConversation["status"]) ?? "offline",
-      lastMessage: dm.lastMessage || "No messages yet",
+      lastMessage: dm.lastMessage || "Пока нет сообщений",
       timestamp: dm.lastMessageAt,
       unread: dm.unreadCount > 0,
       active: dm.recipient.id === activeDmUserId,
@@ -512,9 +519,9 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
       const dmSection = createElement("div", { class: "sidebar-dm-section" });
       const dmHeader = createElement("div", { class: "category" });
       const dmArrow = createElement("span", { class: "category-arrow" }, "\u25BC");
-      const dmLabelEl = createElement("span", { class: "category-name" }, "DIRECT MESSAGES");
+      const dmLabelEl = createElement("span", { class: "category-name" }, "ЛИЧНЫЕ СООБЩЕНИЯ");
       const dmUnreadBadge = createElement("span", { class: "dm-header-unread-badge" });
-      const dmAddBtn = createElement("button", { class: "category-add-btn", title: "New DM" }, "+");
+      const dmAddBtn = createElement("button", { class: "category-add-btn", title: "Новое ЛС" }, "+");
       dmAddBtn.style.opacity = "1";
       appendChildren(dmHeader, dmArrow, dmLabelEl, dmUnreadBadge, dmAddBtn);
       dmSection.appendChild(dmHeader);
@@ -525,7 +532,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
       // "View All" button (shown when more than 5 DMs exist)
       const viewAllBtn = createElement("button", {
         class: "sidebar-dm-view-all",
-      }, "View all messages");
+      }, "Показать все сообщения");
 
       viewAllBtn.addEventListener("click", () => {
         setSidebarMode("dms");
@@ -566,7 +573,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
 
         // Show/hide "View All" button based on DM count
         if (dmChannels.length > 3) {
-          setText(viewAllBtn, `View all messages (${dmChannels.length})`);
+          setText(viewAllBtn, `Показать все сообщения (${dmChannels.length})`);
           viewAllBtn.style.display = "";
         } else {
           viewAllBtn.style.display = "none";
@@ -631,7 +638,7 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
       // Member header (styled like category headers)
       const memberHeader = createElement("div", { class: "category sidebar-members-header" });
       const memberArrow = createElement("span", { class: "category-arrow" }, "\u25BC");
-      const memberLabelEl = createElement("span", { class: "category-name" }, "MEMBERS");
+      const memberLabelEl = createElement("span", { class: "category-name" }, "УЧАСТНИКИ");
       appendChildren(memberHeader, memberArrow, memberLabelEl);
       memberListContainer.appendChild(memberHeader);
 
@@ -710,18 +717,18 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
         onKick: async (userId, username) => {
           try {
             await api.adminKickMember(userId);
-            getToast()?.show(`Kicked ${username}`, "success");
+            getToast()?.show(`Пользователь ${username} исключен`, "success");
           } catch (err) {
-            const msg = err instanceof Error ? err.message : "Failed to kick member";
+            const msg = err instanceof Error ? err.message : "Не удалось исключить участника";
             getToast()?.show(msg, "error");
           }
         },
         onBan: async (userId, username) => {
           try {
             await api.adminBanMember(userId);
-            getToast()?.show(`Banned ${username}`, "success");
+            getToast()?.show(`Пользователь ${username} заблокирован`, "success");
           } catch (err) {
-            const msg = err instanceof Error ? err.message : "Failed to ban member";
+            const msg = err instanceof Error ? err.message : "Не удалось заблокировать участника";
             getToast()?.show(msg, "error");
           }
         },
@@ -730,9 +737,9 @@ export function createSidebarArea(opts: SidebarAreaOptions): SidebarAreaResult {
           if (roleId === undefined) return;
           try {
             await api.adminChangeRole(userId, roleId);
-            getToast()?.show(`Changed ${username}'s role to ${newRole}`, "success");
+            getToast()?.show(`Роль пользователя ${username} изменена на ${newRole}`, "success");
           } catch (err) {
-            const msg = err instanceof Error ? err.message : "Failed to change role";
+            const msg = err instanceof Error ? err.message : "Не удалось изменить роль";
             getToast()?.show(msg, "error");
           }
         },

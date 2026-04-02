@@ -40,9 +40,9 @@ function maskCode(code: string): string {
 
 function formatInviteInfo(invite: InviteItem): string {
   const uses = invite.maxUses !== null
-    ? `${invite.uses}/${invite.maxUses} uses`
-    : `${invite.uses} uses`;
-  return `Created by ${invite.createdBy} \u00B7 ${uses}`;
+    ? `${invite.uses}/${invite.maxUses} использований`
+    : `${invite.uses} использований`;
+  return `Создал: ${invite.createdBy} \u00B7 ${uses}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -79,20 +79,20 @@ export function createInviteManager(
 
       const copyBtn = createElement("button", { class: "invite-item__copy" });
       copyBtn.appendChild(createIcon("external-link", 14));
-      copyBtn.appendChild(document.createTextNode(" Copy"));
+      copyBtn.appendChild(document.createTextNode(" Копировать"));
       copyBtn.addEventListener("click", () => {
         options.onCopyLink(invite.code);
       }, { signal: ac.signal });
 
       const revokeBtn = createElement("button", { class: "invite-item__revoke" });
       revokeBtn.appendChild(createIcon("trash-2", 14));
-      revokeBtn.appendChild(document.createTextNode(" Revoke"));
+      revokeBtn.appendChild(document.createTextNode(" Отозвать"));
       revokeBtn.addEventListener("click", () => {
         void options.onRevokeInvite(invite.code).then(() => {
           invites = invites.filter((i) => i.code !== invite.code);
           renderList();
         }).catch(() => {
-          options.onError?.("Failed to revoke invite");
+          options.onError?.("Не удалось отозвать приглашение");
         });
       }, { signal: ac.signal });
 
@@ -118,7 +118,7 @@ export function createInviteManager(
 
     // Header
     const header = createElement("div", { class: "modal-header" });
-    const title = createElement("h3", {}, "Server Invites");
+    const title = createElement("h3", {}, "Приглашения сервера");
     const closeBtn = createElement("button", { class: "modal-close" });
     closeBtn.appendChild(createIcon("x", 14));
     closeBtn.addEventListener("click", () => options.onClose(), { signal: ac.signal });
@@ -127,20 +127,20 @@ export function createInviteManager(
     // Body
     const body = createElement("div", { class: "modal-body" });
     listEl = createElement("div", { class: "invite-manager__list" });
-    emptyEl = createElement("div", { class: "invite-manager__empty" }, "No active invites");
+    emptyEl = createElement("div", { class: "invite-manager__empty" }, "Нет активных приглашений");
     appendChildren(body, listEl, emptyEl);
 
     // Footer
     const footer = createElement("div", { class: "modal-footer" });
     const createBtn = createElement("button", { class: "invite-manager__create btn-modal-save" });
     createBtn.appendChild(createIcon("external-link", 14));
-    createBtn.appendChild(document.createTextNode(" Create Invite"));
+    createBtn.appendChild(document.createTextNode(" Создать приглашение"));
     createBtn.addEventListener("click", () => {
       void options.onCreateInvite().then((newInvite) => {
         invites = [...invites, newInvite];
         renderList();
       }).catch(() => {
-        options.onError?.("Failed to create invite");
+        options.onError?.("Не удалось создать приглашение");
       });
     }, { signal: ac.signal });
     footer.appendChild(createBtn);

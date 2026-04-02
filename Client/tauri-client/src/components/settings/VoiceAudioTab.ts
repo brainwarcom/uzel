@@ -74,18 +74,18 @@ function buildVoiceAudioTabInner(
   const section = createElement("div", { class: "settings-pane active" });
 
   // Input device selector
-  const inputHeader = createElement("h3", {}, "Input Device");
+  const inputHeader = createElement("h3", {}, "Устройство ввода");
   const inputSelect = createElement("select", {
     class: "form-input",
     style: "width:100%;margin-bottom:12px",
   });
-  const defaultInputOpt = createElement("option", { value: "" }, "Default");
+  const defaultInputOpt = createElement("option", { value: "" }, "По умолчанию");
   inputSelect.appendChild(defaultInputOpt);
   section.appendChild(inputHeader);
   section.appendChild(inputSelect);
 
   // Input Volume slider
-  const inputVolumeHeader = createElement("h3", {}, "Input Volume");
+  const inputVolumeHeader = createElement("h3", {}, "Громкость микрофона");
   section.appendChild(inputVolumeHeader);
   const inputVolumeRow = createElement("div", { class: "slider-row" });
   const savedInputVolume = loadPref<number>("inputVolume", 100);
@@ -107,7 +107,7 @@ function buildVoiceAudioTabInner(
   section.appendChild(inputVolumeRow);
 
   // ── Mic level meter with draggable sensitivity threshold ────────
-  const sensitivityHeader = createElement("h3", {}, "Input Sensitivity");
+  const sensitivityHeader = createElement("h3", {}, "Чувствительность микрофона");
   section.appendChild(sensitivityHeader);
 
   // Real-time mic level bar with embedded draggable threshold handle
@@ -164,18 +164,18 @@ function buildVoiceAudioTabInner(
   }, { signal });
 
   // Output device selector
-  const outputHeader = createElement("h3", {}, "Output Device");
+  const outputHeader = createElement("h3", {}, "Устройство вывода");
   const outputSelect = createElement("select", {
     class: "form-input",
     style: "width:100%;margin-bottom:12px",
   });
-  const defaultOutputOpt = createElement("option", { value: "" }, "Default");
+  const defaultOutputOpt = createElement("option", { value: "" }, "По умолчанию");
   outputSelect.appendChild(defaultOutputOpt);
   section.appendChild(outputHeader);
   section.appendChild(outputSelect);
 
   // Output Volume slider
-  const outputVolumeHeader = createElement("h3", {}, "Output Volume");
+  const outputVolumeHeader = createElement("h3", {}, "Громкость вывода");
   section.appendChild(outputVolumeHeader);
   const outputVolumeRow = createElement("div", { class: "slider-row" });
   const savedOutputVolume = loadPref<number>("outputVolume", 100);
@@ -197,19 +197,19 @@ function buildVoiceAudioTabInner(
   section.appendChild(outputVolumeRow);
 
   // Stream quality selector
-  const qualityHeader = createElement("h3", {}, "Stream Quality");
+  const qualityHeader = createElement("h3", {}, "Качество потока");
   const qualityDesc = createElement("p", {
     style: "color:var(--text-muted);font-size:12px;margin:0 0 8px",
-  }, "Applies to camera and screenshare. Higher quality uses more bandwidth. Changes take effect on next voice join.");
+  }, "Применяется к камере и демонстрации экрана. Более высокое качество использует больше трафика. Изменения вступят в силу при следующем входе в голосовой канал.");
   const qualitySelect = createElement("select", {
     class: "form-input",
     style: "width:100%;margin-bottom:16px",
   });
   const qualityOptions: Array<[string, string]> = [
-    ["low", "Low (360p cam / 720p screen)"],
-    ["medium", "Medium (720p)"],
-    ["high", "High (1080p)"],
-    ["source", "Source (1080p max bitrate)"],
+    ["low", "Низкое (камера 360p / экран 720p)"],
+    ["medium", "Среднее (720p)"],
+    ["high", "Высокое (1080p)"],
+    ["source", "Оригинал (1080p, макс. битрейт)"],
   ];
   const savedQuality = loadPref<string>("streamQuality", "high");
   for (const [value, label] of qualityOptions) {
@@ -226,12 +226,12 @@ function buildVoiceAudioTabInner(
   section.appendChild(qualitySelect);
 
   // Video device selector
-  const videoHeader = createElement("h3", {}, "Video Device");
+  const videoHeader = createElement("h3", {}, "Видеоустройство");
   const videoSelect = createElement("select", {
     class: "form-input",
     style: "width:100%;margin-bottom:12px",
   });
-  const defaultVideoOpt = createElement("option", { value: "" }, "Default");
+  const defaultVideoOpt = createElement("option", { value: "" }, "По умолчанию");
   videoSelect.appendChild(defaultVideoOpt);
   section.appendChild(videoHeader);
   section.appendChild(videoSelect);
@@ -261,17 +261,17 @@ function buildVoiceAudioTabInner(
       for (const d of devices) {
         if (d.kind === "audioinput") {
           const opt = createElement("option", { value: d.deviceId },
-            d.label || `Microphone (${d.deviceId.slice(0, 8)})`);
+            d.label || `Микрофон (${d.deviceId.slice(0, 8)})`);
           if (d.deviceId === savedInput) opt.setAttribute("selected", "");
           inputSelect.appendChild(opt);
         } else if (d.kind === "audiooutput") {
           const opt = createElement("option", { value: d.deviceId },
-            d.label || `Speaker (${d.deviceId.slice(0, 8)})`);
+            d.label || `Динамик (${d.deviceId.slice(0, 8)})`);
           if (d.deviceId === savedOutput) opt.setAttribute("selected", "");
           outputSelect.appendChild(opt);
         } else if (d.kind === "videoinput") {
           const opt = createElement("option", { value: d.deviceId },
-            d.label || `Camera (${d.deviceId.slice(0, 8)})`);
+            d.label || `Камера (${d.deviceId.slice(0, 8)})`);
           if (d.deviceId === savedVideo) opt.setAttribute("selected", "");
           videoSelect.appendChild(opt);
         }
@@ -283,7 +283,7 @@ function buildVoiceAudioTabInner(
       if (savedVideo) videoSelect.value = savedVideo;
     } catch {
       const errOpt = createElement("option", { value: "", disabled: "" },
-        "Could not enumerate devices");
+        "Не удалось получить список устройств");
       inputSelect.appendChild(errOpt);
     }
   })();
@@ -341,7 +341,7 @@ function buildVoiceAudioTabInner(
         previewVideo.srcObject = stream;
       } catch (err) {
         if (signal.aborted || thisRequest !== cameraRequestId) return;
-        const msg = err instanceof Error ? err.message : "Camera unavailable";
+        const msg = err instanceof Error ? err.message : "Камера недоступна";
         previewErrorEl = createElement("div", { class: "setting-desc" }, msg);
         previewWrap.appendChild(previewErrorEl);
       }
@@ -416,10 +416,10 @@ function buildVoiceAudioTabInner(
 
   // ── Audio processing toggles ──────────────────────────────────────
   const audioToggles: ReadonlyArray<{ key: string; label: string; desc: string; fallback: boolean }> = [
-    { key: "echoCancellation", label: "Echo Cancellation", desc: "Reduce echo from speakers feeding back into microphone", fallback: true },
-    { key: "noiseSuppression", label: "Noise Suppression", desc: "Filter out background noise from your microphone", fallback: true },
-    { key: "autoGainControl", label: "Automatic Gain Control", desc: "Automatically adjust microphone volume", fallback: true },
-    { key: "enhancedNoiseSuppression", label: "Enhanced Noise Suppression", desc: "ML-powered noise removal (RNNoise) — filters keyboard, pets, and other non-voice sounds", fallback: false },
+    { key: "echoCancellation", label: "Эхоподавление", desc: "Уменьшать эхо от динамиков, попадающее в микрофон", fallback: true },
+    { key: "noiseSuppression", label: "Шумоподавление", desc: "Фильтровать фоновый шум микрофона", fallback: true },
+    { key: "autoGainControl", label: "Автоконтроль усиления", desc: "Автоматически регулировать громкость микрофона", fallback: true },
+    { key: "enhancedNoiseSuppression", label: "Улучшенное шумоподавление", desc: "Удаление шума на базе ML (RNNoise) — фильтрует клавиатуру, животных и другие не голосовые звуки", fallback: false },
   ];
 
   for (const item of audioToggles) {

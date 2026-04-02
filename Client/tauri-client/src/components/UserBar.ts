@@ -27,7 +27,7 @@ export function createUserBar(options?: UserBarOptions): MountableComponent {
   function updateFromState(): void {
     const state = authStore.getState();
     const user = state.user;
-    const username = user?.username ?? "Unknown";
+    const username = user?.username ?? "Неизвестный";
     const initial = username.charAt(0).toUpperCase() || "?";
 
     if (avatarTextEl !== null) {
@@ -37,7 +37,7 @@ export function createUserBar(options?: UserBarOptions): MountableComponent {
       setText(nameEl, username);
     }
     if (statusEl !== null) {
-      setText(statusEl, state.isAuthenticated ? "Online" : "Offline");
+      setText(statusEl, state.isAuthenticated ? "В сети" : "Не в сети");
     }
   }
 
@@ -65,7 +65,7 @@ export function createUserBar(options?: UserBarOptions): MountableComponent {
 
     const settingsBtn = createElement(
       "button",
-      { title: "Settings", "aria-label": "Settings" },
+      { title: "Настройки", "aria-label": "Настройки" },
     );
     settingsBtn.appendChild(createIcon("settings", 18));
 
@@ -79,8 +79,8 @@ export function createUserBar(options?: UserBarOptions): MountableComponent {
       const disconnectFn = options.onDisconnect;
       const disconnectBtn = createElement("button", {
         class: "ub-ctrl-btn",
-        title: "Switch server",
-        "aria-label": "Switch server",
+        title: "Сменить сервер",
+        "aria-label": "Сменить сервер",
         "data-testid": "disconnect-btn",
       });
       disconnectBtn.appendChild(createIcon("log-out", 18));

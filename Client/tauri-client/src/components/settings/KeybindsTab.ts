@@ -12,25 +12,25 @@ export function buildKeybindsTab(signal: AbortSignal): HTMLDivElement {
 
   // ── Push to Talk ──────────────────────────────────────────
   const pttRow = createElement("div", { class: "keybind-row" });
-  const pttLabel = createElement("span", { class: "setting-label" }, "Push to Talk");
+  const pttLabel = createElement("span", { class: "setting-label" }, "Нажми и говори");
   let currentVk = loadPref<number>("pttVk", 0);
   const pttValue = createElement("button", {
     class: "kbd",
     style: "cursor: pointer; min-width: 80px; text-align: center;",
-    title: "Click to set keybind",
-    "aria-label": "Push to Talk keybind — click to capture",
-  }, currentVk !== 0 ? vkName(currentVk) : "Not set");
+    title: "Нажмите, чтобы задать клавишу",
+    "aria-label": "Клавиша Нажми и говори — нажмите для записи",
+  }, currentVk !== 0 ? vkName(currentVk) : "Не задано");
   const pttClear = createElement("button", {
     class: "ac-btn",
     style: `margin-left: 8px; font-size: 12px; padding: 4px 10px; ${currentVk !== 0 ? "" : "display: none;"}`,
-  }, "Clear");
+  }, "Очистить");
 
   let capturing = false;
 
   pttValue.addEventListener("click", () => {
     if (capturing) return;
     capturing = true;
-    pttValue.textContent = "Press any key...";
+    pttValue.textContent = "Нажмите любую клавишу...";
     pttValue.style.borderColor = "var(--accent)";
     pttValue.style.color = "var(--accent)";
 
@@ -42,7 +42,7 @@ export function buildKeybindsTab(signal: AbortSignal): HTMLDivElement {
       pttValue.style.color = "";
       if (vk === 0) {
         // Timed out — restore previous value
-        setText(pttValue, currentVk !== 0 ? vkName(currentVk) : "Not set");
+        setText(pttValue, currentVk !== 0 ? vkName(currentVk) : "Не задано");
         return;
       }
       currentVk = vk;
@@ -54,14 +54,14 @@ export function buildKeybindsTab(signal: AbortSignal): HTMLDivElement {
       capturing = false;
       pttValue.style.borderColor = "";
       pttValue.style.color = "";
-      setText(pttValue, currentVk !== 0 ? vkName(currentVk) : "Not set");
+      setText(pttValue, currentVk !== 0 ? vkName(currentVk) : "Не задано");
     });
   }, { signal });
 
   pttClear.addEventListener("click", (e) => {
     e.stopPropagation();
     currentVk = 0;
-    setText(pttValue, "Not set");
+    setText(pttValue, "Не задано");
     pttClear.style.display = "none";
     void updatePttKey(0);
   }, { signal });
@@ -72,7 +72,7 @@ export function buildKeybindsTab(signal: AbortSignal): HTMLDivElement {
   // PTT hint
   const pttHint = createElement("div", {
     style: "font-size: 11px; color: var(--text-micro); margin: 4px 0 16px 0; line-height: 1.4;",
-  }, "PTT works globally and does not hijack the key \u2014 you can still type and use other apps normally. Mouse buttons (Mouse 4/5) also work.");
+  }, "PTT работает глобально и не перехватывает клавишу — вы можете печатать и пользоваться другими приложениями. Кнопки мыши (Mouse 4/5) тоже поддерживаются.");
   section.appendChild(pttHint);
 
   // ── Navigation section ────────────────────────────────────
@@ -80,13 +80,13 @@ export function buildKeybindsTab(signal: AbortSignal): HTMLDivElement {
 
   const navHeader = createElement("div", {
     class: "keybind-section-header",
-  }, "Navigation");
+  }, "Навигация");
   section.appendChild(navHeader);
 
   const navBinds: [string, string][] = [
-    ["Quick Switcher", "Ctrl + K"],
-    ["Mark as Read", "Escape"],
-    ["Search Messages", "Ctrl + F"],
+    ["Быстрое переключение", "Ctrl + K"],
+    ["Отметить как прочитанное", "Escape"],
+    ["Поиск сообщений", "Ctrl + F"],
   ];
   for (const [label, shortcut] of navBinds) {
     const row = createElement("div", { class: "keybind-row" });
@@ -102,13 +102,13 @@ export function buildKeybindsTab(signal: AbortSignal): HTMLDivElement {
 
   const commHeader = createElement("div", {
     class: "keybind-section-header",
-  }, "Communication");
+  }, "Связь");
   section.appendChild(commHeader);
 
   const commBinds: [string, string][] = [
-    ["Toggle Mute", "Ctrl + M"],
-    ["Toggle Deafen", "Ctrl + D"],
-    ["Toggle Camera", "Ctrl + Shift + V"],
+    ["Вкл/выкл микрофон", "Ctrl + M"],
+    ["Вкл/выкл наушники", "Ctrl + D"],
+    ["Вкл/выкл камеру", "Ctrl + Shift + V"],
   ];
   for (const [label, shortcut] of commBinds) {
     const row = createElement("div", { class: "keybind-row" });
@@ -124,12 +124,12 @@ export function buildKeybindsTab(signal: AbortSignal): HTMLDivElement {
 
   const msgHeader = createElement("div", {
     class: "keybind-section-header",
-  }, "Messages");
+  }, "Сообщения");
   section.appendChild(msgHeader);
 
   const msgBinds: [string, string][] = [
-    ["Upload File", "Ctrl + U"],
-    ["Edit Last Message", "Arrow Up"],
+    ["Загрузить файл", "Ctrl + U"],
+    ["Редактировать последнее сообщение", "Arrow Up"],
   ];
   for (const [label, shortcut] of msgBinds) {
     const row = createElement("div", { class: "keybind-row" });

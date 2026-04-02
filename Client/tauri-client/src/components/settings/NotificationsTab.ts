@@ -9,10 +9,10 @@ export function buildNotificationsTab(signal: AbortSignal): HTMLDivElement {
   const section = createElement("div", { class: "settings-pane active" });
 
   const toggles: ReadonlyArray<{ key: string; label: string; desc: string; fallback: boolean }> = [
-    { key: "desktopNotifications", label: "Desktop Notifications", desc: "Show desktop notifications for messages", fallback: true },
-    { key: "flashTaskbar", label: "Flash Taskbar", desc: "Flash taskbar on new messages", fallback: true },
-    { key: "suppressEveryone", label: "Suppress @everyone", desc: "Mute @everyone and @here mentions", fallback: false },
-    { key: "notificationSounds", label: "Notification Sounds", desc: "Play sounds for notifications", fallback: true },
+    { key: "desktopNotifications", label: "Уведомления на рабочем столе", desc: "Показывать уведомления о новых сообщениях", fallback: true },
+    { key: "flashTaskbar", label: "Мигать в панели задач", desc: "Подсвечивать приложение в панели задач при новых сообщениях", fallback: true },
+    { key: "suppressEveryone", label: "Игнорировать @everyone", desc: "Отключить уведомления от @everyone и @here", fallback: false },
+    { key: "notificationSounds", label: "Звуки уведомлений", desc: "Воспроизводить звуки для уведомлений", fallback: true },
   ];
 
   for (const item of toggles) {

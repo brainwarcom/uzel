@@ -17,8 +17,8 @@ type ToggleItem = {
 const TOGGLES: ReadonlyArray<ToggleItem> = [
   {
     key: "reducedMotion",
-    label: "Reduce Motion",
-    desc: "Disable animations and transitions",
+    label: "Снижение анимации",
+    desc: "Отключить анимации и переходы",
     fallback: false,
     sideEffect: (nowOn) => {
       document.documentElement.classList.toggle("reduced-motion", nowOn);
@@ -26,8 +26,8 @@ const TOGGLES: ReadonlyArray<ToggleItem> = [
   },
   {
     key: "highContrast",
-    label: "High Contrast",
-    desc: "Increase contrast for better readability",
+    label: "Высокая контрастность",
+    desc: "Повысить контраст для лучшей читаемости",
     fallback: false,
     sideEffect: (nowOn) => {
       document.documentElement.classList.toggle("high-contrast", nowOn);
@@ -35,21 +35,21 @@ const TOGGLES: ReadonlyArray<ToggleItem> = [
   },
   {
     key: "roleColors",
-    label: "Role Colors",
-    desc: "Show colored usernames based on role in chat",
+    label: "Цвета ролей",
+    desc: "Показывать цветные имена в чате в зависимости от роли",
     fallback: true,
   },
   {
     key: "syncOsMotion",
-    label: "Sync with OS",
-    desc: "Automatically enable reduced motion based on your OS accessibility settings",
+    label: "Синхронизация с ОС",
+    desc: "Автоматически включать снижение анимации по настройкам доступности ОС",
     fallback: false,
     sideEffect: (nowOn) => { syncOsMotionListener(nowOn); },
   },
   {
     key: "largeFont",
-    label: "Large Font",
-    desc: "Use larger text throughout the app for better readability",
+    label: "Крупный шрифт",
+    desc: "Использовать более крупный текст во всем приложении",
     fallback: false,
     sideEffect: (nowOn) => {
       document.documentElement.classList.toggle("large-font", nowOn);

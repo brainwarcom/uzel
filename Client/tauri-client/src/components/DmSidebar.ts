@@ -88,7 +88,7 @@ function renderDmItem(
   // Close button (hidden by default, shown on hover via CSS)
   const closeBtn = createElement("button", {
     class: "dm-close",
-    title: "Close DM",
+    title: "Закрыть диалог",
   });
   closeBtn.textContent = "";
   closeBtn.appendChild(createIcon("x", 14));
@@ -143,8 +143,8 @@ export function createDmSidebar(options: DmSidebarOptions): MountableComponent {
       const arrow = createElement("span", { class: "dm-back-arrow" }, "\u2190");
       const backInfo = createElement("div", { class: "dm-back-info" });
       const backTitle = createElement("div", { class: "dm-back-title" },
-        `Back to ${options.serverName ?? "Server"}`);
-      const backSub = createElement("div", { class: "dm-back-subtitle" }, "Return to channels");
+        `Назад к ${options.serverName ?? "серверу"}`);
+      const backSub = createElement("div", { class: "dm-back-subtitle" }, "Вернуться к каналам");
       appendChildren(backInfo, backTitle, backSub);
       appendChildren(backHeader, arrow, backInfo);
       backHeader.addEventListener("click", () => backFn(), { signal: ac.signal });
@@ -155,7 +155,7 @@ export function createDmSidebar(options: DmSidebarOptions): MountableComponent {
     const header = createElement("div", { class: "dm-sidebar-header" });
     const searchInput = createElement("input", {
       class: "dm-search",
-      placeholder: "Find a conversation",
+      placeholder: "Найти диалог",
     });
     header.appendChild(searchInput);
 
@@ -164,7 +164,7 @@ export function createDmSidebar(options: DmSidebarOptions): MountableComponent {
     if (options.friendsActive === true) {
       friendsNav.classList.add("active");
     }
-    setText(friendsNav, "Friends");
+    setText(friendsNav, "Друзья");
     friendsNav.addEventListener(
       "click",
       () => {
@@ -177,10 +177,10 @@ export function createDmSidebar(options: DmSidebarOptions): MountableComponent {
 
     // Section label with + button
     const sectionLabel = createElement("div", { class: "dm-section-label" });
-    setText(sectionLabel, "Direct Messages");
+    setText(sectionLabel, "Личные сообщения");
     const addBtn = createElement("button", {
       class: "dm-add",
-      title: "New DM",
+      title: "Новое ЛС",
     });
     setText(addBtn, "+");
     addBtn.addEventListener("click", () => options.onNewDm(), { signal: ac.signal });

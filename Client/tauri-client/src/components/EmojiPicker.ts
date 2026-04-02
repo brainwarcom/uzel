@@ -210,7 +210,7 @@ export function createEmojiPicker(options: EmojiPickerOptions): {
   const searchInput = createElement("input", {
     class: "ep-search",
     type: "text",
-    placeholder: "Search emoji...",
+    placeholder: "Поиск эмодзи...",
   });
   header.appendChild(searchInput);
   root.appendChild(header);

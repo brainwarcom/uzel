@@ -29,7 +29,7 @@ export function createServerBanner(): ServerBannerControl {
     clearCountdown();
     let remaining = seconds;
     root.classList.add("visible");
-    setText(root, `Server restarting in ${remaining} seconds...`);
+    setText(root, `Сервер перезапускается через ${remaining} сек...`);
 
     intervalId = setInterval(() => {
       remaining -= 1;
@@ -38,14 +38,14 @@ export function createServerBanner(): ServerBannerControl {
         showReconnecting();
         return;
       }
-      setText(root, `Server restarting in ${remaining} seconds...`);
+      setText(root, `Сервер перезапускается через ${remaining} сек...`);
     }, 1000);
   }
 
   function showReconnecting(): void {
     clearCountdown();
     root.classList.add("visible");
-    setText(root, "Reconnecting...");
+    setText(root, "Переподключение...");
   }
 
   function hide(): void {

@@ -187,7 +187,7 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
 
     // Channel name
     const channel = channelsStore.getState().channels.get(channelId);
-    setText(channelNameEl, channel?.name ?? "Voice Channel");
+    setText(channelNameEl, channel?.name ?? "Голосовой канал");
 
     // Toggle button active states, swap icons, and update aria-pressed
     muteBtn?.classList.toggle("active-ctrl", voice.localMuted);
@@ -226,11 +226,11 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
 
     // Header row: "Voice Connected" + channel name + signal icon
     const header = createElement("div", { class: "vw-header" });
-    const connLabel = createElement("span", { class: "vw-connected" }, "Voice Connected");
+    const connLabel = createElement("span", { class: "vw-connected" }, "Голос подключен");
     timerEl = createElement("span", { class: "vw-timer" }, "00:00");
-    channelNameEl = createElement("span", { class: "vw-channel" }, "Voice Channel");
+    channelNameEl = createElement("span", { class: "vw-channel" }, "Голосовой канал");
 
-    signalWrap = createElement("div", { class: "vw-signal", "aria-label": "Connection quality" });
+    signalWrap = createElement("div", { class: "vw-signal", "aria-label": "Качество соединения" });
     signalWrap.appendChild(createSignalIcon(4, QUALITY_COLORS.excellent, 14));
     pingLabel = createElement("span", { class: "vw-ping" }, "—");
     pingLabel.style.color = QUALITY_COLORS.excellent;
@@ -243,18 +243,18 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
 
     // Expanded stats pane (hidden by default)
     statsPane = createElement("div", { class: "vw-stats" });
-    const statsTitle = createElement("div", { class: "vw-stats-title" }, "Transport Statistics");
+    const statsTitle = createElement("div", { class: "vw-stats-title" }, "Статистика соединения");
     const statsGrid = createElement("div", { class: "vw-stats-grid" });
 
     // Outgoing column
     const outCol = createElement("div", {});
-    const outLabel = createElement("div", { class: "vw-stats-col-label out" }, "Outgoing");
+    const outLabel = createElement("div", { class: "vw-stats-col-label out" }, "Исходящий");
     outRateEl = createElement("span", {}, "0 B/s");
     outPacketsEl = createElement("span", {}, "0");
     rttEl = createElement("span", {}, "—");
     rttEl.style.fontWeight = "600";
     const outBody = createElement("div", { class: "vw-stats-row" });
-    for (const [label, el] of [["Rate: ", outRateEl], ["Packets: ", outPacketsEl], ["RTT: ", rttEl]] as const) {
+    for (const [label, el] of [["Скорость: ", outRateEl], ["Пакеты: ", outPacketsEl], ["RTT: ", rttEl]] as const) {
       outBody.appendChild(document.createTextNode(label));
       outBody.appendChild(el);
       outBody.appendChild(createElement("br", {}));
@@ -263,11 +263,11 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
 
     // Incoming column
     const inCol = createElement("div", {});
-    const inLabel = createElement("div", { class: "vw-stats-col-label in" }, "Incoming");
+    const inLabel = createElement("div", { class: "vw-stats-col-label in" }, "Входящий");
     inRateEl = createElement("span", {}, "0 B/s");
     inPacketsEl = createElement("span", {}, "0");
     const inBody = createElement("div", { class: "vw-stats-row" });
-    for (const [label, el] of [["Rate: ", inRateEl], ["Packets: ", inPacketsEl]] as const) {
+    for (const [label, el] of [["Скорость: ", inRateEl], ["Пакеты: ", inPacketsEl]] as const) {
       inBody.appendChild(document.createTextNode(label));
       inBody.appendChild(el);
       inBody.appendChild(createElement("br", {}));
@@ -278,7 +278,7 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
 
     // Session totals
     const totals = createElement("div", { class: "vw-stats-totals" });
-    const totalsLabel = createElement("div", { class: "vw-stats-totals-label" }, "Session Totals");
+    const totalsLabel = createElement("div", { class: "vw-stats-totals-label" }, "Итого за сессию");
     const totalsRow = createElement("div", { class: "vw-stats-totals-row" });
     totalUpEl = createElement("span", {}, "0 B");
     totalDownEl = createElement("span", {}, "0 B");
@@ -295,30 +295,30 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
 
     // Controls row
     const controls = createElement("div", { class: "vw-controls" });
-    muteBtn = createControlButton("Mute", "mic", options.onMuteToggle);
-    deafenBtn = createControlButton("Deafen", "headphones", options.onDeafenToggle);
-    cameraBtn = createControlButton("Camera", "camera", options.onCameraToggle);
-    shareBtn = createControlButton("Screenshare", "monitor", options.onScreenshareToggle);
+    muteBtn = createControlButton("Микрофон", "mic", options.onMuteToggle);
+    deafenBtn = createControlButton("Наушники", "headphones", options.onDeafenToggle);
+    cameraBtn = createControlButton("Камера", "camera", options.onCameraToggle);
+    shareBtn = createControlButton("Демонстрация", "monitor", options.onScreenshareToggle);
     const disconnectBtn = createControlButton(
-      "Disconnect", "phone", options.onDisconnect, "disconnect",
+      "Отключиться", "phone", options.onDisconnect, "disconnect",
     );
     appendChildren(controls, muteBtn, deafenBtn, cameraBtn, shareBtn, disconnectBtn);
 
     // "Grant Microphone" button for listen-only mode
     grantMicBtn = createElement("button", {
       class: "vw-grant-mic",
-      "aria-label": "Grant microphone permission",
-    }, "Grant Microphone");
+      "aria-label": "Разрешить микрофон",
+    }, "Разрешить микрофон");
     grantMicBtn.style.display = "none";
     grantMicBtn.addEventListener("click", () => {
       if (grantMicBtn) {
         grantMicBtn.disabled = true;
-        setText(grantMicBtn, "Requesting...");
+        setText(grantMicBtn, "Запрос...");
       }
       void retryMicPermission().finally(() => {
         if (grantMicBtn) {
           grantMicBtn.disabled = false;
-          setText(grantMicBtn, "Grant Microphone");
+          setText(grantMicBtn, "Разрешить микрофон");
         }
       });
     }, { signal: ac.signal });

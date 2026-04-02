@@ -245,10 +245,10 @@ export function renderMessage(
     if (msg.user.id === opts.currentUserId) {
       const editBtn = createElement("button", {
         "data-testid": `msg-edit-${msg.id}`,
-        "aria-label": "Edit",
+        "aria-label": "Изменить",
       });
       editBtn.appendChild(createIcon("pencil", 16));
-      editBtn.title = "Edit";
+      editBtn.title = "Изменить";
       editBtn.addEventListener("click", () => opts.onEditClick(msg.id), { signal });
       actionsBar.appendChild(editBtn);
     }
@@ -256,10 +256,10 @@ export function renderMessage(
     if (msg.user.id === opts.currentUserId) {
       const deleteBtn = createElement("button", {
         "data-testid": `msg-delete-${msg.id}`,
-        "aria-label": "Delete",
+        "aria-label": "Удалить",
       });
       deleteBtn.appendChild(createIcon("trash-2", 16));
-      deleteBtn.title = "Delete";
+      deleteBtn.title = "Удалить";
       deleteBtn.addEventListener("click", () => opts.onDeleteClick(msg.id), { signal });
       actionsBar.appendChild(deleteBtn);
     }

@@ -33,16 +33,16 @@ export function createUpdateNotifier(options: UpdateNotifierOptions): MountableC
     banner = createElement("div", { class: "update-banner" });
 
     const text = createElement("span", { class: "update-banner-text" },
-      `Update v${version} available`);
+      `Доступно обновление v${version}`);
 
     const updateBtn = createElement("button", { class: "update-banner-btn update-banner-install" },
-      "Update Now");
+      "Обновить");
     updateBtn.addEventListener("click", () => {
       void installUpdate();
     });
 
     const laterBtn = createElement("button", { class: "update-banner-btn update-banner-later" },
-      "Later");
+      "Позже");
     laterBtn.addEventListener("click", () => {
       dismissed = true;
       removeBanner();
@@ -58,7 +58,7 @@ export function createUpdateNotifier(options: UpdateNotifierOptions): MountableC
     // Replace banner content with progress indicator
     while (banner.firstChild) banner.removeChild(banner.firstChild);
     const progress = createElement("span", { class: "update-banner-text" },
-      "Downloading update...");
+      "Загрузка обновления...");
     banner.appendChild(progress);
 
     try {
@@ -68,9 +68,9 @@ export function createUpdateNotifier(options: UpdateNotifierOptions): MountableC
       log.error("Update install failed", { error: String(err) });
       while (banner.firstChild) banner.removeChild(banner.firstChild);
       const errorText = createElement("span", { class: "update-banner-text" },
-        "Update failed. Please try again later.");
+        "Не удалось установить обновление. Попробуйте позже.");
       const dismissBtn = createElement("button", { class: "update-banner-btn update-banner-later" },
-        "Dismiss");
+        "Закрыть");
       dismissBtn.addEventListener("click", () => {
         dismissed = true;
         removeBanner();

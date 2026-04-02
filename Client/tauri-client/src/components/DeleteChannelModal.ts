@@ -31,7 +31,7 @@ export function createDeleteChannelModal(
 
     // Header
     const header = createElement("div", { class: "modal-header" });
-    const title = createElement("h3", {}, "Delete Channel");
+    const title = createElement("h3", {}, "Удалить канал");
     const closeBtn = createElement("button", {
       class: "modal-close",
       type: "button",
@@ -64,7 +64,7 @@ export function createDeleteChannelModal(
     const cancelBtn = createElement(
       "button",
       { class: "btn-modal-cancel", type: "button" },
-      "Cancel",
+      "Отмена",
     );
     cancelBtn.addEventListener("click", onClose, { signal: ac.signal });
 
@@ -75,7 +75,7 @@ export function createDeleteChannelModal(
         type: "button",
         "data-testid": "delete-channel-confirm",
       },
-      "Delete Channel",
+      "Удалить канал",
     );
 
     deleteBtn.addEventListener(
@@ -93,7 +93,7 @@ export function createDeleteChannelModal(
             err instanceof Error ? err.message : "Failed to delete channel",
           );
           deleteBtn.removeAttribute("disabled");
-          setText(deleteBtn, "Delete Channel");
+          setText(deleteBtn, "Удалить канал");
         }
       },
       { signal: ac.signal },

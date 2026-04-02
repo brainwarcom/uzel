@@ -86,20 +86,20 @@ export function createServerPanel(
     const panel = createElement("div", { class: "server-panel" });
 
     const header = createElement("div", { class: "server-panel-header" });
-    const heading = createElement("h2", {}, "Servers");
+    const heading = createElement("h2", {}, "Серверы");
     header.appendChild(heading);
 
     serverListEl = createElement("div", { class: "server-list" });
 
     renderServerProfiles(initialProfiles);
 
-    // Footer with "Add Server" button
+    // Footer with "Добавить сервер" button
     const footer = createElement("div", { class: "server-panel-footer" });
     const addBtn = createElement("button", {
       class: "btn-add-server",
       type: "button",
     });
-    setText(addBtn, "+ Add Server");
+    setText(addBtn, "+ Добавить сервер");
     addBtn.addEventListener("click", handleAddServer, { signal });
     footer.appendChild(addBtn);
 
@@ -153,8 +153,8 @@ export function createServerPanel(
         const autoLoginBtn = createElement("button", {
           class: `srv-btn auto-login${isAutoLogin ? " active" : ""}`,
           type: "button",
-          "aria-label": isAutoLogin ? "Disable auto-login" : "Enable auto-login",
-          title: isAutoLogin ? "Auto-login enabled" : "Enable auto-login",
+          "aria-label": isAutoLogin ? "Отключить автовход" : "Включить автовход",
+          title: isAutoLogin ? "Автовход включен" : "Включить автовход",
         });
         autoLoginBtn.textContent = "";
         autoLoginBtn.appendChild(createIcon("zap", 14));
@@ -174,7 +174,7 @@ export function createServerPanel(
         const deleteBtn = createElement("button", {
           class: "srv-btn danger",
           type: "button",
-          "aria-label": "Delete server",
+          "aria-label": "Удалить сервер",
         });
         deleteBtn.textContent = "";
         deleteBtn.appendChild(createIcon("x", 14));
@@ -231,7 +231,7 @@ export function createServerPanel(
 
     // Update online users count
     if (status.onlineUsers !== null && status.onlineUsers >= 0) {
-      setText(els.onlineUsers, `${status.onlineUsers} online`);
+      setText(els.onlineUsers, `${status.onlineUsers} в сети`);
       els.onlineUsers.className = `srv-online-users ${status.onlineUsers > 0 ? "has-users" : ""}`;
     } else {
       setText(els.onlineUsers, "");
@@ -250,7 +250,7 @@ export function createServerPanel(
     const modal = createElement("div", { class: "modal" });
 
     const header = createElement("div", { class: "modal-header" });
-    const title = createElement("h3", {}, "Add Server");
+    const title = createElement("h3", {}, "Добавить сервер");
     const closeBtn = createElement("button", { class: "modal-close", type: "button" });
     closeBtn.textContent = "";
     closeBtn.appendChild(createIcon("x", 14));
@@ -258,16 +258,16 @@ export function createServerPanel(
 
     const body = createElement("div", { class: "modal-body" });
     const nameGroup = createElement("div", { class: "form-group" });
-    const nameLabel = createElement("label", { class: "form-label" }, "Server Name");
+    const nameLabel = createElement("label", { class: "form-label" }, "Название сервера");
     const nameInput = createElement("input", {
       class: "form-input",
       type: "text",
-      placeholder: "My Server",
+      placeholder: "Мой сервер",
     });
     appendChildren(nameGroup, nameLabel, nameInput);
 
     const hostGroup = createElement("div", { class: "form-group" });
-    const hostLabel = createElement("label", { class: "form-label" }, "Host Address");
+    const hostLabel = createElement("label", { class: "form-label" }, "Адрес хоста");
     const hostAddrInput = createElement("input", {
       class: "form-input",
       type: "text",
@@ -279,9 +279,9 @@ export function createServerPanel(
 
     const footer = createElement("div", { class: "modal-footer" });
     const cancelBtn = createElement("button", { class: "btn-ghost", type: "button" });
-    setText(cancelBtn, "Cancel");
+    setText(cancelBtn, "Отмена");
     const saveBtn = createElement("button", { class: "btn-primary", type: "button" });
-    setText(saveBtn, "Add Server");
+    setText(saveBtn, "Добавить сервер");
     appendChildren(footer, cancelBtn, saveBtn);
 
     appendChildren(modal, header, body, footer);
@@ -298,7 +298,7 @@ export function createServerPanel(
       // Validate address: must be a valid hostname:port — no paths, no special chars
       if (!/^[\w.-]+(:\d+)?$/.test(addr)) {
         // Show inline validation error via the host input
-        hostAddrInput.setCustomValidity("Invalid server address (expected host or host:port)");
+        hostAddrInput.setCustomValidity("Некорректный адрес сервера (ожидается host или host:port)");
         hostAddrInput.reportValidity();
         return;
       }

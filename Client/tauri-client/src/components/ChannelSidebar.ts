@@ -60,7 +60,7 @@ function showUserVolumeMenu(
   const volLabel = createElement("div", {
     class: "context-menu-item",
     style: "font-size:12px;color:var(--text-muted);cursor:default;pointer-events:none",
-  }, `User Volume: ${currentVol}%`);
+  }, `Громкость пользователя: ${currentVol}%`);
   menu.appendChild(volLabel);
 
   const sliderRow = createElement("div", {
@@ -82,19 +82,19 @@ function showUserVolumeMenu(
   slider.addEventListener("input", () => {
     const val = Number(slider.value);
     setText(valLabel, `${val}%`);
-    setText(volLabel, `User Volume: ${val}%`);
+    setText(volLabel, `Громкость пользователя: ${val}%`);
     setUserVolume(userId, val);
   });
 
   appendChildren(sliderRow, slider, valLabel);
   menu.appendChild(sliderRow);
 
-  const resetBtn = createElement("div", { class: "context-menu-item" }, "Reset Volume");
+  const resetBtn = createElement("div", { class: "context-menu-item" }, "Сбросить громкость");
   resetBtn.addEventListener("click", () => {
     setUserVolume(userId, 100);
     slider.value = "100";
     setText(valLabel, "100%");
-    setText(volLabel, "User Volume: 100%");
+    setText(volLabel, "Громкость пользователя: 100%");
   });
   menu.appendChild(resetBtn);
 
@@ -129,6 +129,8 @@ export interface ChannelReorderData {
 export interface ChannelSidebarOptions {
   readonly onVoiceJoin: (channelId: number) => void;
   readonly onVoiceLeave: () => void;
+  /** Called when user clicks currently active text channel. */
+  readonly onCurrentTextChannelClick?: (channelId: number) => void;
   /** Called when the user clicks the "+" on a category header. */
   readonly onCreateChannel?: (category: string) => void;
   /** Called when the user right-clicks a channel and selects Edit. */
@@ -165,6 +167,7 @@ function renderTextChannelItem(
   channel: Channel,
   isActive: boolean,
   signal: AbortSignal,
+  onCurrentTextChannelClick?: (channelId: number) => void,
 ): HTMLDivElement {
   const classes = [
     "channel-item",
@@ -194,6 +197,9 @@ function renderTextChannelItem(
   item.addEventListener(
     "click",
     () => {
+      // Always force chat view on text-channel click. This prevents
+      // sticky video-grid state even when activeChannelId doesn't change.
+      onCurrentTextChannelClick?.(channel.id);
       setActiveChannel(channel.id);
       clearUnread(channel.id);
     },
@@ -232,7 +238,7 @@ function renderVoiceChannelItem(
     "click",
     () => {
       if (isJoined) {
-        onVoiceLeave();
+        onVoiceJoin(channel.id);
       } else {
         onVoiceJoin(channel.id);
       }
@@ -262,7 +268,7 @@ function renderVoiceChannelItem(
       const nameEl = createElement(
         "span",
         { class: "vu-name" },
-        user.username || "Unknown",
+        user.username || "Неизвестный",
       );
       row.appendChild(nameEl);
 
@@ -277,7 +283,7 @@ function renderVoiceChannelItem(
         screenIcon.appendChild(createIcon("monitor", 14));
         row.appendChild(screenIcon);
 
-        const liveBadge = createElement("span", { class: "vu-live-badge" }, "LIVE");
+        const liveBadge = createElement("span", { class: "vu-live-badge" }, "ЭФИР");
         row.appendChild(liveBadge);
       }
 
@@ -302,7 +308,7 @@ function renderVoiceChannelItem(
         row.addEventListener("contextmenu", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          showUserVolumeMenu(user.userId, user.username || "Unknown", e.clientX, e.clientY, signal);
+          showUserVolumeMenu(user.userId, user.username || "Неизвестный", e.clientX, e.clientY, signal);
         }, { signal });
       }
 
@@ -329,7 +335,7 @@ function renderVoiceChannelItem(
         attachStreamPreview(
           row,
           user.userId,
-          user.username || "Unknown",
+          user.username || "Неизвестный",
           user.screenshare,
           user.camera,
           signal,
@@ -388,7 +394,7 @@ function attachChannelContextMenu(
         const editItem = createElement(
           "div",
           { class: "context-menu-item", "data-testid": "ctx-edit-channel" },
-          "Edit Channel",
+          "Изменить канал",
         );
         editItem.addEventListener(
           "click",
@@ -408,7 +414,7 @@ function attachChannelContextMenu(
         const deleteItem = createElement(
           "div",
           { class: "context-menu-item danger", "data-testid": "ctx-delete-channel" },
-          "Delete Channel",
+          "Удалить канал",
         );
         deleteItem.addEventListener(
           "click",
@@ -617,6 +623,7 @@ function renderChannelItem(
   signal: AbortSignal,
   onVoiceJoin: (channelId: number) => void,
   onVoiceLeave: () => void,
+  onCurrentTextChannelClick?: (channelId: number) => void,
   onEditChannel?: (channel: Channel) => void,
   onDeleteChannel?: (channel: Channel) => void,
   containerEl?: HTMLElement,
@@ -628,7 +635,7 @@ function renderChannelItem(
   if (channel.type === "voice") {
     el = renderVoiceChannelItem(channel, signal, onVoiceJoin, onVoiceLeave, onWatchStream);
   } else {
-    el = renderTextChannelItem(channel, isActive, signal);
+    el = renderTextChannelItem(channel, isActive, signal, onCurrentTextChannelClick);
   }
   attachChannelContextMenu(el, channel, signal, onEditChannel, onDeleteChannel);
   if (containerEl !== undefined && channels !== undefined) {
@@ -644,6 +651,7 @@ function renderCategoryGroup(
   signal: AbortSignal,
   onVoiceJoin: (channelId: number) => void,
   onVoiceLeave: () => void,
+  onCurrentTextChannelClick?: (channelId: number) => void,
   onCreateChannel?: (category: string) => void,
   onEditChannel?: (channel: Channel) => void,
   onDeleteChannel?: (channel: Channel) => void,
@@ -673,7 +681,7 @@ function renderCategoryGroup(
       if (canManageChannels) {
         const addBtn = createElement("span", {
           class: "category-add-btn",
-          title: "Create Channel",
+          title: "Создать канал",
           "data-testid": `create-channel-${categoryName.toLowerCase().replace(/\s+/g, "-")}`,
         }, "+");
         addBtn.addEventListener(
@@ -702,7 +710,7 @@ function renderCategoryGroup(
       const channelsContainer = createElement("div", { class: "category-channels-container" });
       for (const ch of channels) {
         channelsContainer.appendChild(
-          renderChannelItem(ch, ch.id === activeChannelId, signal, onVoiceJoin, onVoiceLeave, onEditChannel, onDeleteChannel, channelsContainer, channels, onReorderChannel, onWatchStream),
+          renderChannelItem(ch, ch.id === activeChannelId, signal, onVoiceJoin, onVoiceLeave, onCurrentTextChannelClick, onEditChannel, onDeleteChannel, channelsContainer, channels, onReorderChannel, onWatchStream),
         );
       }
       group.appendChild(channelsContainer);
@@ -712,7 +720,7 @@ function renderCategoryGroup(
     const channelsContainer = createElement("div", { class: "category-channels-container" });
     for (const ch of channels) {
       channelsContainer.appendChild(
-        renderChannelItem(ch, ch.id === activeChannelId, signal, onVoiceJoin, onVoiceLeave, onEditChannel, onDeleteChannel, channelsContainer, channels, onReorderChannel, onWatchStream),
+        renderChannelItem(ch, ch.id === activeChannelId, signal, onVoiceJoin, onVoiceLeave, onCurrentTextChannelClick, onEditChannel, onDeleteChannel, channelsContainer, channels, onReorderChannel, onWatchStream),
       );
     }
     group.appendChild(channelsContainer);
@@ -722,7 +730,16 @@ function renderCategoryGroup(
 }
 
 export function createChannelSidebar(options: ChannelSidebarOptions): MountableComponent {
-  const { onVoiceJoin, onVoiceLeave, onCreateChannel, onEditChannel, onDeleteChannel, onReorderChannel, onWatchStream } = options;
+  const {
+    onVoiceJoin,
+    onVoiceLeave,
+    onCurrentTextChannelClick,
+    onCreateChannel,
+    onEditChannel,
+    onDeleteChannel,
+    onReorderChannel,
+    onWatchStream,
+  } = options;
   const ac = new AbortController();
   let root: HTMLDivElement | null = null;
   let channelList: HTMLDivElement | null = null;
@@ -741,8 +758,8 @@ export function createChannelSidebar(options: ChannelSidebarOptions): MountableC
 
     if (grouped.size === 0) {
       const emptyState = createElement("div", { class: "channel-list-empty" });
-      const msg = createElement("p", { class: "channel-list-empty-text" }, "No channels yet");
-      const hint = createElement("p", { class: "channel-list-empty-hint" }, "Right-click a category to create one");
+      const msg = createElement("p", { class: "channel-list-empty-text" }, "Пока нет каналов");
+      const hint = createElement("p", { class: "channel-list-empty-hint" }, "Нажмите правой кнопкой по категории, чтобы создать канал");
       appendChildren(emptyState, msg, hint);
       channelList.appendChild(emptyState);
       return;
@@ -750,7 +767,7 @@ export function createChannelSidebar(options: ChannelSidebarOptions): MountableC
 
     for (const [category, channels] of grouped) {
       channelList.appendChild(
-        renderCategoryGroup(category, channels, state.activeChannelId, ac.signal, onVoiceJoin, onVoiceLeave, onCreateChannel, onEditChannel, onDeleteChannel, onReorderChannel, onWatchStream),
+        renderCategoryGroup(category, channels, state.activeChannelId, ac.signal, onVoiceJoin, onVoiceLeave, onCurrentTextChannelClick, onCreateChannel, onEditChannel, onDeleteChannel, onReorderChannel, onWatchStream),
       );
     }
   }
@@ -764,7 +781,7 @@ export function createChannelSidebar(options: ChannelSidebarOptions): MountableC
     serverNameEl = createElement(
       "h2",
       {},
-      authState.serverName ?? "Server Name",
+      authState.serverName ?? "Сервер",
     );
     header.appendChild(serverNameEl);
 
@@ -794,7 +811,7 @@ export function createChannelSidebar(options: ChannelSidebarOptions): MountableC
       (s) => s.serverName,
       (serverName) => {
         if (serverNameEl !== null) {
-          setText(serverNameEl, serverName ?? "Server Name");
+          setText(serverNameEl, serverName ?? "Сервер");
         }
       },
     );

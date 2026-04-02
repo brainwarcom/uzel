@@ -19,7 +19,9 @@ export interface TileConfig {
 
 export interface VideoGridComponent extends MountableComponent {
   addStream(userId: number, username: string, stream: MediaStream, config?: TileConfig): void;
+  addPlaceholder(userId: number, username: string): void;
   removeStream(userId: number): void;
+  removePlaceholder(userId: number): void;
   hasStreams(): boolean;
   setFocusedTile(tileId: number): void;
   getFocusedTileId(): number | null;
@@ -93,7 +95,7 @@ export function computeGridLayout(
 
 export function createVideoGrid(): VideoGridComponent {
   let root: HTMLDivElement | null = null;
-  const cells = new Map<number, { el: HTMLDivElement; config?: TileConfig }>();
+  const cells = new Map<number, { el: HTMLDivElement; config?: TileConfig; kind: "stream" | "placeholder" }>();
   let focusedTileId: number | null = null;
   let resizeObserver: ResizeObserver | null = null;
   let resizeRafId = 0;
@@ -197,6 +199,10 @@ export function createVideoGrid(): VideoGridComponent {
     // If a cell already exists for this user, update it in place
     const existing = cells.get(userId);
     if (existing !== undefined) {
+      if (existing.kind === "placeholder") {
+        existing.el.remove();
+        cells.delete(userId);
+      } else {
       const video = existing.el.querySelector("video");
       if (video !== null) {
         // Only replace srcObject if the underlying tracks changed
@@ -215,6 +221,7 @@ export function createVideoGrid(): VideoGridComponent {
         label.textContent = username;
       }
       return;
+      }
     }
 
     const video = createElement("video", {
@@ -268,7 +275,7 @@ export function createVideoGrid(): VideoGridComponent {
           setUserVolume(config.audioUserId, currentVolume);
         }
         setButtonIcon(muteBtn, muted ? volumeXIcon() : volumeIcon());
-        muteBtn.setAttribute("aria-label", muted ? "Unmute" : "Mute");
+        muteBtn.setAttribute("aria-label", muted ? "Включить звук" : "Выключить звук");
         if (muted !== wasMuted) {
           overlay.classList.toggle("muted", muted);
         }
@@ -277,7 +284,7 @@ export function createVideoGrid(): VideoGridComponent {
       // Mute button
       const muteBtn = createElement("button", {
         class: "tile-mute-btn",
-        "aria-label": "Mute",
+        "aria-label": "Выключить звук",
       });
       muteBtn.appendChild(volumeIcon());
 
@@ -300,7 +307,7 @@ export function createVideoGrid(): VideoGridComponent {
           volumeSlider.value = String(currentVolume);
         }
         setButtonIcon(muteBtn, muted ? volumeXIcon() : volumeIcon());
-        muteBtn.setAttribute("aria-label", muted ? "Unmute" : "Mute");
+        muteBtn.setAttribute("aria-label", muted ? "Включить звук" : "Выключить звук");
         overlay.classList.toggle("muted", muted);
       });
 
@@ -309,7 +316,48 @@ export function createVideoGrid(): VideoGridComponent {
       cell.appendChild(overlay);
     }
 
-    cells.set(userId, { el: cell, config });
+    cells.set(userId, { el: cell, config, kind: "stream" });
+    root.appendChild(cell);
+    if (focusedTileId !== null) {
+      rebuildFocusLayout();
+    } else {
+      updateLayout();
+    }
+  }
+
+  function addPlaceholder(userId: number, username: string): void {
+    if (root === null) return;
+
+    const existing = cells.get(userId);
+    if (existing !== undefined) {
+      if (existing.kind === "stream") return;
+      const label = existing.el.querySelector(".video-username");
+      if (label !== null) label.textContent = username;
+      const avatar = existing.el.querySelector(".video-placeholder-avatar");
+      if (avatar !== null) avatar.textContent = username.charAt(0).toUpperCase() || "?";
+      return;
+    }
+
+    const cell = createElement("div", {
+      class: "video-cell video-cell-placeholder",
+      "data-user-id": String(userId),
+    });
+
+    const placeholder = createElement("div", { class: "video-placeholder" });
+    const avatar = createElement("div", { class: "video-placeholder-avatar" },
+      username.charAt(0).toUpperCase() || "?");
+    const label = createElement("div", { class: "video-username" }, username);
+    appendChildren(placeholder, avatar);
+    appendChildren(cell, placeholder, label);
+
+    cell.addEventListener("click", () => {
+      if (focusedTileId !== null && focusedTileId !== userId) {
+        focusedTileId = userId;
+        rebuildFocusLayout();
+      }
+    });
+
+    cells.set(userId, { el: cell, kind: "placeholder" });
     root.appendChild(cell);
     if (focusedTileId !== null) {
       rebuildFocusLayout();
@@ -321,6 +369,7 @@ export function createVideoGrid(): VideoGridComponent {
   function removeStream(userId: number): void {
     const entry = cells.get(userId);
     if (entry === undefined) return;
+    if (entry.kind !== "stream") return;
 
     const video = entry.el.querySelector("video");
     if (video !== null) video.srcObject = null;
@@ -336,6 +385,23 @@ export function createVideoGrid(): VideoGridComponent {
     }
 
     if (focusedTileId !== null || wasFocusMode) {
+      rebuildFocusLayout();
+    } else {
+      updateLayout();
+    }
+  }
+
+  function removePlaceholder(userId: number): void {
+    const entry = cells.get(userId);
+    if (entry === undefined) return;
+    if (entry.kind !== "placeholder") return;
+    entry.el.remove();
+    cells.delete(userId);
+    if (focusedTileId === userId) {
+      const firstKey = cells.keys().next().value;
+      focusedTileId = firstKey ?? null;
+    }
+    if (focusedTileId !== null) {
       rebuildFocusLayout();
     } else {
       updateLayout();
@@ -380,5 +446,15 @@ export function createVideoGrid(): VideoGridComponent {
     }
   }
 
-  return { mount, destroy, addStream, removeStream, hasStreams, setFocusedTile, getFocusedTileId: getFocusedTileIdFn };
+  return {
+    mount,
+    destroy,
+    addStream,
+    addPlaceholder,
+    removeStream,
+    removePlaceholder,
+    hasStreams,
+    setFocusedTile,
+    getFocusedTileId: getFocusedTileIdFn,
+  };
 }

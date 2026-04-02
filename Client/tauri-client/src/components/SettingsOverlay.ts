@@ -39,6 +39,8 @@ export interface SettingsOverlayOptions {
   onEnableTotp(password: string): Promise<{ qr_uri: string; backup_codes: string[] }>;
   onConfirmTotp(password: string, code: string): Promise<void>;
   onDisableTotp(password: string): Promise<void>;
+  /** Connected server URL used for in-app client updates (e.g. https://host:8443). */
+  updateServerUrl?: string | null;
   /** When false, the Account tab is hidden (e.g. on the connect page). Defaults to true. */
   isAuthenticated?: boolean;
 }
@@ -56,6 +58,20 @@ const TAB_ICONS: Record<TabName, IconName> = {
   Advanced: "settings",
   Logs: "scroll-text",
 };
+
+function getTabLabel(tab: TabName): string {
+  switch (tab) {
+    case "Account": return "Аккаунт";
+    case "Appearance": return "Внешний вид";
+    case "Notifications": return "Уведомления";
+    case "Text & Images": return "Текст и изображения";
+    case "Accessibility": return "Доступность";
+    case "Voice & Audio": return "Голос и аудио";
+    case "Keybinds": return "Горячие клавиши";
+    case "Advanced": return "Дополнительно";
+    case "Logs": return "Логи";
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Apply stored appearance (called at app startup)
@@ -129,7 +145,7 @@ export function createSettingsOverlay(
     Accessibility: () => buildAccessibilityTab(ac.signal),
     "Voice & Audio": () => voiceTab.build(),
     Keybinds: () => buildKeybindsTab(ac.signal),
-    Advanced: () => buildAdvancedTab(ac.signal),
+    Advanced: () => buildAdvancedTab(ac.signal, { updateServerUrl: options.updateServerUrl }),
     Logs: () => logsTab.build(),
   };
 
@@ -139,7 +155,7 @@ export function createSettingsOverlay(
     if (contentArea === null) return;
     clearChildren(contentArea);
     if (pageTitle === null) return;
-    pageTitle.textContent = activeTab;
+    pageTitle.textContent = getTabLabel(activeTab);
     contentArea.appendChild(pageTitle);
     const builder = TAB_BUILDERS[activeTab];
     contentArea.appendChild(builder());
@@ -182,8 +198,8 @@ export function createSettingsOverlay(
       (user?.username ?? "U").charAt(0).toUpperCase());
     const profileInfo = createElement("div", {});
     const profileName = createElement("div", { class: "settings-sidebar-name" },
-      user?.username ?? "Unknown");
-    const editProfileLink = createElement("div", { class: "settings-sidebar-edit" }, "Edit Profile");
+      user?.username ?? "Неизвестный");
+    const editProfileLink = createElement("div", { class: "settings-sidebar-edit" }, "Изменить профиль");
     if (authenticated) {
       editProfileLink.addEventListener("click", () => setActiveTab("Account"), { signal: ac.signal });
     } else {
@@ -195,7 +211,7 @@ export function createSettingsOverlay(
 
     // "User Settings" category — only Account belongs here (hidden when not authenticated)
     if (authenticated) {
-      const userSettingsCat = createElement("div", { class: "settings-cat" }, "User Settings");
+      const userSettingsCat = createElement("div", { class: "settings-cat" }, "НАСТРОЙКИ ПОЛЬЗОВАТЕЛЯ");
       sidebar.appendChild(userSettingsCat);
 
       const accountBtn = createElement("button", {
@@ -204,14 +220,14 @@ export function createSettingsOverlay(
         "aria-selected": activeTab === "Account" ? "true" : "false",
       });
       accountBtn.prepend(createIcon(TAB_ICONS["Account"], 18));
-      accountBtn.appendChild(document.createTextNode("Account"));
+      accountBtn.appendChild(document.createTextNode(getTabLabel("Account")));
       accountBtn.addEventListener("click", () => setActiveTab("Account"), { signal: ac.signal });
       tabButtons.set("Account", accountBtn);
       sidebar.appendChild(accountBtn);
     }
 
     // "App Settings" category — remaining tabs
-    const appSettingsCat = createElement("div", { class: "settings-cat" }, "App Settings");
+    const appSettingsCat = createElement("div", { class: "settings-cat" }, "НАСТРОЙКИ ПРИЛОЖЕНИЯ");
     sidebar.appendChild(appSettingsCat);
 
     const appTabs: readonly TabName[] = ["Appearance", "Notifications", "Text & Images", "Accessibility", "Voice & Audio", "Keybinds", "Advanced", "Logs"];
@@ -222,7 +238,7 @@ export function createSettingsOverlay(
         "aria-selected": name === activeTab ? "true" : "false",
       });
       btn.prepend(createIcon(TAB_ICONS[name], 18));
-      btn.appendChild(document.createTextNode(name));
+      btn.appendChild(document.createTextNode(getTabLabel(name)));
       btn.addEventListener("click", () => setActiveTab(name), { signal: ac.signal });
       tabButtons.set(name, btn);
       sidebar.appendChild(btn);
@@ -232,14 +248,14 @@ export function createSettingsOverlay(
       // Separator + Log Out at sidebar bottom
       const logoutWrap = createElement("div", { class: "settings-sidebar-logout" });
       const logoutSep = createElement("div", { class: "settings-sep" });
-      const logoutBtn = createElement("button", { class: "settings-nav-item danger" }, "Log Out");
+      const logoutBtn = createElement("button", { class: "settings-nav-item danger" }, "Выйти");
       logoutBtn.addEventListener("click", () => options.onLogout(), { signal: ac.signal });
       appendChildren(logoutWrap, logoutSep, logoutBtn);
       sidebar.appendChild(logoutWrap);
     }
 
     // Page title (h1) at top of content area — created here, inserted in renderActiveTab
-    pageTitle = createElement("h1", {}, activeTab);
+    pageTitle = createElement("h1", {}, getTabLabel(activeTab));
 
     // Content
     contentArea = createElement("div", { class: "settings-content" });

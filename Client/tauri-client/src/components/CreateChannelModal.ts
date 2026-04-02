@@ -57,7 +57,7 @@ export function createCreateChannelModal(
 
     // Header
     const header = createElement("div", { class: "modal-header" });
-    const title = createElement("h3", {}, "Create Channel");
+    const title = createElement("h3", {}, "Создать канал");
     const closeBtn = createElement("button", {
       class: "modal-close",
       type: "button",
@@ -75,7 +75,7 @@ export function createCreateChannelModal(
     const categoryLabel = createElement(
       "label",
       { class: "form-label" },
-      "Category",
+      "Категория",
     );
     const categoryDisplay = createElement("div", {
       class: "form-input",
@@ -86,7 +86,7 @@ export function createCreateChannelModal(
 
     // Channel name
     const nameGroup = createElement("div", { class: "form-group" });
-    const nameLabel = createElement("label", { class: "form-label" }, "Name");
+    const nameLabel = createElement("label", { class: "form-label" }, "Название");
     const nameInput = createElement("input", {
       class: "form-input",
       type: "text",
@@ -97,7 +97,7 @@ export function createCreateChannelModal(
 
     // Channel type
     const typeGroup = createElement("div", { class: "form-group" });
-    const typeLabel = createElement("label", { class: "form-label" }, "Type");
+    const typeLabel = createElement("label", { class: "form-label" }, "Тип");
     const typeSelect = createElement("select", {
       class: "form-input",
       "data-testid": "channel-type-select",
@@ -127,7 +127,7 @@ export function createCreateChannelModal(
     const cancelBtn = createElement(
       "button",
       { class: "btn-modal-cancel", type: "button" },
-      "Cancel",
+      "Отмена",
     );
     cancelBtn.addEventListener("click", onClose, { signal: ac.signal });
 
@@ -138,7 +138,7 @@ export function createCreateChannelModal(
         type: "button",
         "data-testid": "channel-create-submit",
       },
-      "Create Channel",
+      "Создать канал",
     );
 
     createBtn.addEventListener(
@@ -147,7 +147,7 @@ export function createCreateChannelModal(
         const name = nameInput.value.trim();
         if (name === "") {
           errorEl.style.display = "block";
-          setText(errorEl, "Channel name is required");
+          setText(errorEl, "Введите название канала");
           nameInput.classList.add("error");
           return;
         }
@@ -156,7 +156,7 @@ export function createCreateChannelModal(
         errorEl.style.display = "none";
         nameInput.classList.remove("error");
         createBtn.setAttribute("disabled", "true");
-        setText(createBtn, "Creating...");
+        setText(createBtn, "Создание...");
 
         try {
           await onCreate({
@@ -168,10 +168,10 @@ export function createCreateChannelModal(
           errorEl.style.display = "block";
           setText(
             errorEl,
-            err instanceof Error ? err.message : "Failed to create channel",
+            err instanceof Error ? err.message : "Не удалось создать канал",
           );
           createBtn.removeAttribute("disabled");
-          setText(createBtn, "Create Channel");
+          setText(createBtn, "Создать канал");
         }
       },
       { signal: ac.signal },

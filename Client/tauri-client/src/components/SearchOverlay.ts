@@ -103,7 +103,7 @@ export function createSearchOverlay(options: SearchOverlayOptions): MountableCom
     if (query.length < MIN_QUERY_LEN) {
       results = [];
       renderResults();
-      setStatus(query.length > 0 ? `Type at least ${MIN_QUERY_LEN} characters` : "");
+      setStatus(query.length > 0 ? `Введите минимум ${MIN_QUERY_LEN} символа` : "");
       return;
     }
 
@@ -113,18 +113,18 @@ export function createSearchOverlay(options: SearchOverlayOptions): MountableCom
     }
     searchAbort = new AbortController();
 
-    setStatus("Searching...");
+    setStatus("Поиск...");
 
     options.onSearch(query, options.currentChannelId, searchAbort.signal)
       .then((items) => {
         results = items;
         activeIndex = 0;
         renderResults();
-        setStatus(items.length === 0 ? "No results found" : "");
+        setStatus(items.length === 0 ? "Ничего не найдено" : "");
       })
       .catch((err: unknown) => {
         if (err instanceof DOMException && err.name === "AbortError") return;
-        setStatus("Search failed");
+        setStatus("Ошибка поиска");
       });
   }
 
@@ -184,8 +184,8 @@ export function createSearchOverlay(options: SearchOverlayOptions): MountableCom
     input = createElement("input", {
       class: "search-overlay-input",
       type: "text",
-      placeholder: "Search messages...",
-      "aria-label": "Search messages",
+      placeholder: "Поиск сообщений...",
+      "aria-label": "Поиск сообщений",
       "data-testid": "search-overlay-input",
     });
 

@@ -162,9 +162,9 @@ export function createChannelController(
             type: "chat_delete",
             payload: { message_id: msgId },
           });
-          showToast("Message deleted", "success");
+          showToast("Сообщение удалено", "success");
         } else {
-          showToast("Click delete again to confirm", "info");
+          showToast("Нажмите удаление еще раз для подтверждения", "info");
         }
       },
       onReactionClick: (msgId: number, emoji: string) => {
@@ -176,10 +176,10 @@ export function createChannelController(
           : api.pinMessage(chId, msgId);
         action.then(() => {
           setMessagePinned(chId, msgId, !currentlyPinned);
-          showToast(currentlyPinned ? "Message unpinned" : "Message pinned", "success");
+          showToast(currentlyPinned ? "Сообщение откреплено" : "Сообщение закреплено", "success");
         }).catch((err) => {
           log.error("Pin/unpin failed", { error: String(err) });
-          showToast("Failed to pin/unpin message", "error");
+          showToast("Не удалось закрепить или открепить сообщение", "error");
         });
       },
     });
@@ -199,7 +199,7 @@ export function createChannelController(
       onSend: (content: string, replyTo: number | null, attachments: readonly string[]) => {
         if (ws.getState() !== "connected") {
           log.warn("Cannot send message: not connected");
-          showToast("Not connected — message not sent", "error");
+          showToast("Нет подключения — сообщение не отправлено", "error");
           return;
         }
         ws.send({
@@ -218,7 +218,7 @@ export function createChannelController(
           return { id: result.id, url: result.url, filename: result.filename };
         } catch (err) {
           log.error("File upload failed", { error: String(err) });
-          showToast("File upload failed", "error");
+          showToast("Не удалось загрузить файл", "error");
           throw err;
         }
       },
@@ -233,7 +233,7 @@ export function createChannelController(
       onEditMessage: (messageId: number, content: string) => {
         const trimmed = content.trim();
         if (trimmed === "") {
-          showToast("Message cannot be empty", "error");
+          showToast("Сообщение не может быть пустым", "error");
           return;
         }
         const msgs = getChannelMessages(channelId);
@@ -245,7 +245,7 @@ export function createChannelController(
           type: "chat_edit",
           payload: { message_id: messageId, content: trimmed },
         });
-        showToast("Message edited", "success");
+        showToast("Сообщение изменено", "success");
       },
     });
     messageInput.mount(slots.inputSlot);
@@ -268,12 +268,18 @@ export function createChannelController(
     if (chatHeaderRefs !== null && channelType === "dm") {
       // Look up the recipient's actual status from DM store or members store
       const dmChannel = dmStore.getState().channels.find((c) => c.channelId === channelId);
-      let recipientStatus = "Offline";
+      let recipientStatus = "offline";
       if (dmChannel !== undefined) {
         const member = membersStore.getState().members.get(dmChannel.recipient.id);
-        recipientStatus = member?.status ?? dmChannel.recipient.status ?? "Offline";
+        recipientStatus = member?.status ?? dmChannel.recipient.status ?? "offline";
       }
-      const displayStatus = recipientStatus.charAt(0).toUpperCase() + recipientStatus.slice(1);
+      const displayStatus = recipientStatus === "online"
+        ? "В сети"
+        : recipientStatus === "idle"
+          ? "Нет на месте"
+          : recipientStatus === "dnd"
+            ? "Не беспокоить"
+            : "Не в сети";
       updateChatHeaderForDm(chatHeaderRefs, { username: channelName, status: displayStatus });
     } else if (chatHeaderRefs !== null) {
       updateChatHeaderForDm(chatHeaderRefs, null);

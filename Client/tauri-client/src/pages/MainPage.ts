@@ -173,6 +173,18 @@ export function createMainPage(options: MainPageOptions): MountableComponent {
       limiters,
       getRoot: () => root,
       getToast: () => toast,
+      onCurrentTextChannelClick: () => {
+        if (videoModeCtrl === null) return;
+        videoModeCtrl.showChat();
+      },
+      onVoiceChannelClick: () => {
+        if (videoModeCtrl === null) return;
+        videoModeCtrl.showVideoGrid();
+      },
+      onCurrentVoiceChannelClick: () => {
+        if (videoModeCtrl === null) return;
+        videoModeCtrl.showVideoGrid();
+      },
       onWatchStream: (userId) => {
         if (videoModeCtrl === null) return;
         videoModeCtrl.showVideoGrid();
@@ -209,13 +221,14 @@ export function createMainPage(options: MainPageOptions): MountableComponent {
 
     // Settings overlay
     const settingsOverlay = createSettingsOverlay({
+      updateServerUrl: apiConfig.host ? `https://${apiConfig.host}` : null,
       onClose: () => closeSettings(),
       onChangePassword: async (oldPassword, newPassword) => {
         try {
           await api.changePassword(oldPassword, newPassword);
-          showToast("Password changed successfully", "success");
+          showToast("Пароль успешно изменен", "success");
         } catch (err) {
-          const msg = err instanceof Error ? err.message : "Failed to change password";
+          const msg = err instanceof Error ? err.message : "Не удалось изменить пароль";
           showToast(msg, "error");
           throw err;
         }
@@ -224,9 +237,9 @@ export function createMainPage(options: MainPageOptions): MountableComponent {
         try {
           const updated = await api.updateProfile({ username });
           updateUser({ username: updated.username });
-          showToast("Profile updated", "success");
+          showToast("Профиль обновлен", "success");
         } catch (err) {
-          const msg = err instanceof Error ? err.message : "Failed to update profile";
+          const msg = err instanceof Error ? err.message : "Не удалось обновить профиль";
           showToast(msg, "error");
           throw err;
         }
@@ -235,13 +248,13 @@ export function createMainPage(options: MainPageOptions): MountableComponent {
       onDeleteAccount: async (password) => {
         await api.deleteAccount(password);
         clearAuth();
-        showToast("Account deleted successfully", "success");
+        showToast("Аккаунт успешно удален", "success");
       },
       onEnableTotp: async (password) => {
         try {
           return await api.enableTotp(password);
         } catch (err) {
-          const msg = err instanceof Error ? err.message : "Failed to enable 2FA";
+          const msg = err instanceof Error ? err.message : "Не удалось включить 2FA";
           showToast(msg, "error");
           throw err;
         }
@@ -250,9 +263,9 @@ export function createMainPage(options: MainPageOptions): MountableComponent {
         try {
           await api.confirmTotp(password, code);
           updateUser({ totp_enabled: true });
-          showToast("Two-factor authentication enabled", "success");
+          showToast("Двухфакторная аутентификация включена", "success");
         } catch (err) {
-          const msg = err instanceof Error ? err.message : "Failed to confirm 2FA";
+          const msg = err instanceof Error ? err.message : "Не удалось подтвердить 2FA";
           showToast(msg, "error");
           throw err;
         }
@@ -261,9 +274,9 @@ export function createMainPage(options: MainPageOptions): MountableComponent {
         try {
           await api.disableTotp(password);
           updateUser({ totp_enabled: false });
-          showToast("Two-factor authentication disabled", "success");
+          showToast("Двухфакторная аутентификация отключена", "success");
         } catch (err) {
-          const msg = err instanceof Error ? err.message : "Failed to disable 2FA";
+          const msg = err instanceof Error ? err.message : "Не удалось отключить 2FA";
           showToast(msg, "error");
           throw err;
         }

@@ -100,11 +100,6 @@ export function createVideoModeController(
         }
       }
     }
-    // Auto-close video grid when no streams remain
-    if (!anyVideoOn && videoMode) {
-      showChat();
-    }
-
     // Manage local self-view tile — only add once, skip if already showing
     const currentUserId = getCurrentUserId();
     if (voice.localCamera) {

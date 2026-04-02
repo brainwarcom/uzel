@@ -41,17 +41,17 @@ function buildProfileCard(username: string): ProfileCardResult {
   // Header row
   const accountHeader = createElement("div", { class: "account-header" });
   const headerName = createElement("div", { class: "account-header-name" }, username);
-  const editUserProfileBtn = createElement("button", { class: "ac-btn" }, "Edit User Profile");
+  const editUserProfileBtn = createElement("button", { class: "ac-btn" }, "Изменить профиль");
   appendChildren(accountHeader, headerName, editUserProfileBtn);
 
   // Username field row
   const fieldsContainer = createElement("div", { class: "account-fields" });
   const usernameField = createElement("div", { class: "account-field" });
   const usernameLeft = createElement("div", {});
-  const usernameLabel = createElement("div", { class: "account-field-label" }, "Username");
+  const usernameLabel = createElement("div", { class: "account-field-label" }, "Имя пользователя");
   const usernameValue = createElement("div", { class: "account-field-value" }, username);
   appendChildren(usernameLeft, usernameLabel, usernameValue);
-  const editUsernameBtn = createElement("button", { class: "account-field-edit" }, "Edit");
+  const editUsernameBtn = createElement("button", { class: "account-field-edit" }, "Изменить");
   appendChildren(usernameField, usernameLeft, editUsernameBtn);
   fieldsContainer.appendChild(usernameField);
 
@@ -71,22 +71,22 @@ function buildPasswordSection(
   const wrapper = createElement("div", {});
 
   const separator = createElement("div", { class: "settings-separator" });
-  const pwHeader = createElement("div", { class: "settings-section-title" }, "Password and Authentication");
+  const pwHeader = createElement("div", { class: "settings-section-title" }, "Пароль и аутентификация");
 
   const oldPw = createElement("input", {
     class: "form-input", type: "password",
-    placeholder: "Old password", style: "margin-bottom:12px",
+    placeholder: "Старый пароль", style: "margin-bottom:12px",
   });
   const newPw = createElement("input", {
     class: "form-input", type: "password",
-    placeholder: "New password", style: "margin-bottom:12px",
+    placeholder: "Новый пароль", style: "margin-bottom:12px",
   });
   const confirmPw = createElement("input", {
     class: "form-input", type: "password",
-    placeholder: "Confirm new password", style: "margin-bottom:12px",
+    placeholder: "Подтвердите новый пароль", style: "margin-bottom:12px",
   });
   const pwError = createElement("div", { style: "color:var(--red);font-size:13px;margin-bottom:8px" });
-  const pwBtn = createElement("button", { class: "ac-btn" }, "Change Password");
+  const pwBtn = createElement("button", { class: "ac-btn" }, "Изменить пароль");
   let pwSuccessTimer: ReturnType<typeof setTimeout> | null = null;
 
   pwBtn.addEventListener("click", () => {
@@ -95,11 +95,11 @@ function buildPasswordSection(
     const confirmVal = confirmPw.value;
 
     if (newVal.length < 8) {
-      setText(pwError, "New password must be at least 8 characters.");
+      setText(pwError, "Новый пароль должен быть не короче 8 символов.");
       return;
     }
     if (newVal !== confirmVal) {
-      setText(pwError, "Passwords do not match.");
+      setText(pwError, "Пароли не совпадают.");
       return;
     }
     setText(pwError, "");
@@ -109,14 +109,14 @@ function buildPasswordSection(
       confirmPw.value = "";
       if (pwSuccessTimer !== null) clearTimeout(pwSuccessTimer);
       pwError.style.color = "var(--green)";
-      setText(pwError, "Password changed successfully.");
+      setText(pwError, "Пароль успешно изменен.");
       pwSuccessTimer = setTimeout(() => {
         setText(pwError, "");
         pwError.style.color = "var(--red)";
         pwSuccessTimer = null;
       }, 3000);
     }).catch((err: unknown) => {
-      setText(pwError, err instanceof Error ? err.message : "Failed to change password.");
+      setText(pwError, err instanceof Error ? err.message : "Не удалось изменить пароль.");
     });
   }, { signal });
 
@@ -137,24 +137,24 @@ function buildTotpEnrollForm(
 
   const description = createElement("div", {
     style: "color:var(--text-muted);font-size:13px;margin-bottom:12px",
-  }, "Add an extra layer of security to your account.");
+  }, "Добавьте дополнительный уровень защиты аккаунта.");
 
   const enableBtn = createElement("button", {
     class: "ac-btn",
     "data-testid": "totp-enable-btn",
-  }, "Enable 2FA");
+  }, "Включить 2FA");
 
   const formArea = createElement("div", { style: "display:none" });
   const pwInput = createElement("input", {
     class: "form-input", type: "password",
-    placeholder: "Enter your password", style: "margin-bottom:12px",
+    placeholder: "Введите пароль", style: "margin-bottom:12px",
     "data-testid": "totp-password-input",
   });
   const errorEl = createElement("div", {
     style: "color:var(--red);font-size:13px;margin-bottom:8px",
     "data-testid": "totp-error",
   });
-  const submitBtn = createElement("button", { class: "ac-btn" }, "Submit");
+  const submitBtn = createElement("button", { class: "ac-btn" }, "Подтвердить");
 
   appendChildren(formArea, pwInput, errorEl, submitBtn);
 
@@ -171,23 +171,23 @@ function buildTotpEnrollForm(
   submitBtn.addEventListener("click", () => {
     const pw = pwInput.value;
     if (pw.length === 0) {
-      setText(errorEl, "Password is required.");
+      setText(errorEl, "Требуется пароль.");
       return;
     }
     setText(errorEl, "");
     submitBtn.disabled = true;
-    setText(submitBtn, "Requesting...");
+    setText(submitBtn, "Запрос...");
 
     void options.onEnableTotp(pw).then((result) => {
       formArea.style.display = "none";
       buildTotpConfirmArea(enrollArea, options, pw, result, signal, onEnrolled);
       enrollArea.style.display = "block";
       submitBtn.disabled = false;
-      setText(submitBtn, "Submit");
+      setText(submitBtn, "Подтвердить");
     }).catch((err: unknown) => {
-      setText(errorEl, err instanceof Error ? err.message : "Failed to enable 2FA.");
+      setText(errorEl, err instanceof Error ? err.message : "Не удалось включить 2FA.");
       submitBtn.disabled = false;
-      setText(submitBtn, "Submit");
+      setText(submitBtn, "Подтвердить");
     });
   }, { signal });
 
@@ -210,7 +210,7 @@ function buildTotpConfirmArea(
 
   const qrLabel = createElement("div", {
     style: "color:var(--text-muted);font-size:13px;margin-bottom:8px",
-  }, "Scan this URI with your authenticator app, or copy it manually:");
+  }, "Сканируйте этот URI в приложении-аутентификаторе или скопируйте вручную:");
 
   const qrUri = createElement("code", {
     style: "display:block;background:var(--bg-active);padding:8px 12px;border-radius:6px;" +
@@ -224,7 +224,7 @@ function buildTotpConfirmArea(
   if (result.backup_codes.length > 0) {
     const backupLabel = createElement("div", {
       style: "color:var(--text-muted);font-size:13px;margin-bottom:8px",
-    }, "Save these backup codes in a safe place:");
+    }, "Сохраните резервные коды в безопасном месте:");
     const backupList = createElement("code", {
       style: "display:block;background:var(--bg-active);padding:8px 12px;border-radius:6px;" +
         "font-family:monospace;font-size:12px;white-space:pre-wrap;margin-bottom:12px;" +
@@ -235,7 +235,7 @@ function buildTotpConfirmArea(
 
   const codeInput = createElement("input", {
     class: "form-input", type: "text",
-    placeholder: "6-digit code", maxlength: "6",
+    placeholder: "6-значный код", maxlength: "6",
     style: "margin-bottom:12px",
     "data-testid": "totp-code-input",
   });
@@ -248,24 +248,24 @@ function buildTotpConfirmArea(
   const confirmBtn = createElement("button", {
     class: "ac-btn",
     "data-testid": "totp-confirm-btn",
-  }, "Verify & Activate");
+  }, "Проверить и активировать");
 
   confirmBtn.addEventListener("click", () => {
     const code = codeInput.value.trim();
     if (code.length === 0) {
-      setText(confirmError, "Please enter the 6-digit code.");
+      setText(confirmError, "Введите 6-значный код.");
       return;
     }
     setText(confirmError, "");
     confirmBtn.disabled = true;
-    setText(confirmBtn, "Verifying...");
+    setText(confirmBtn, "Проверка...");
 
     void options.onConfirmTotp(password, code).then(() => {
       onEnrolled();
     }).catch((err: unknown) => {
-      setText(confirmError, err instanceof Error ? err.message : "Invalid verification code.");
+      setText(confirmError, err instanceof Error ? err.message : "Неверный код подтверждения.");
       confirmBtn.disabled = false;
-      setText(confirmBtn, "Verify & Activate");
+      setText(confirmBtn, "Проверить и активировать");
     });
   }, { signal });
 
@@ -282,17 +282,17 @@ function buildTotpDisableView(
 
   const description = createElement("div", {
     style: "color:var(--text-muted);font-size:13px;margin-bottom:12px",
-  }, "Your account is protected with 2FA.");
+  }, "Ваш аккаунт защищен 2FA.");
 
   const disableBtn = createElement("button", {
     class: "ac-btn account-delete-btn",
     "data-testid": "totp-disable-btn",
-  }, "Disable 2FA");
+  }, "Отключить 2FA");
 
   const confirmArea = createElement("div", { style: "display:none" });
   const pwInput = createElement("input", {
     class: "form-input", type: "password",
-    placeholder: "Enter your password", style: "margin-bottom:12px",
+    placeholder: "Введите пароль", style: "margin-bottom:12px",
     "data-testid": "totp-password-input",
   });
   const errorEl = createElement("div", {
@@ -300,10 +300,10 @@ function buildTotpDisableView(
     "data-testid": "totp-error",
   });
   const btnRow = createElement("div", { style: "display:flex;gap:8px" });
-  const confirmBtn = createElement("button", { class: "ac-btn account-delete-btn" }, "Confirm Disable");
+  const confirmBtn = createElement("button", { class: "ac-btn account-delete-btn" }, "Подтвердить отключение");
   const cancelBtn = createElement("button", {
     class: "ac-btn", style: "background:var(--bg-active)",
-  }, "Cancel");
+  }, "Отмена");
   appendChildren(btnRow, confirmBtn, cancelBtn);
   appendChildren(confirmArea, pwInput, errorEl, btnRow);
 
@@ -325,23 +325,23 @@ function buildTotpDisableView(
   confirmBtn.addEventListener("click", () => {
     const pw = pwInput.value;
     if (pw.length === 0) {
-      setText(errorEl, "Password is required.");
+      setText(errorEl, "Требуется пароль.");
       return;
     }
     setText(errorEl, "");
     confirmBtn.disabled = true;
-    setText(confirmBtn, "Disabling...");
+    setText(confirmBtn, "Отключение...");
 
     void options.onDisableTotp(pw).then(() => {
       onDisabled();
     }).catch((err: unknown) => {
-      const msg = err instanceof Error ? err.message : "Failed to disable 2FA.";
+      const msg = err instanceof Error ? err.message : "Не удалось отключить 2FA.";
       const is403Required = msg.toLowerCase().includes("required");
       setText(errorEl, is403Required
-        ? "2FA is required by this server and cannot be disabled"
+        ? "2FA обязательно на этом сервере и не может быть отключена"
         : msg);
       confirmBtn.disabled = false;
-      setText(confirmBtn, "Confirm Disable");
+      setText(confirmBtn, "Подтвердить отключение");
     });
   }, { signal });
 
@@ -362,7 +362,7 @@ function buildTotpSection(
   const header = createElement("div", {
     class: "settings-section-title",
     style: "margin-bottom:0",
-  }, "Two-Factor Authentication");
+  }, "Двухфакторная аутентификация");
 
   const statusBadge = createElement("span", {
     "data-testid": "totp-status-badge",
@@ -377,11 +377,11 @@ function buildTotpSection(
     const enabled = authStore.getState().user?.totp_enabled === true;
 
     if (enabled) {
-      statusBadge.textContent = "Enabled";
+      statusBadge.textContent = "Включена";
       statusBadge.style.background = "var(--green, #3ba55d)";
       statusBadge.style.color = "#fff";
     } else {
-      statusBadge.textContent = "Disabled";
+      statusBadge.textContent = "Отключена";
       statusBadge.style.background = "var(--bg-active)";
       statusBadge.style.color = "var(--text-muted)";
     }
@@ -415,10 +415,10 @@ interface StatusOption {
 }
 
 const STATUS_OPTIONS: readonly StatusOption[] = [
-  { value: "online",  label: "Online",          description: "",                                                    color: "#3ba55d" },
-  { value: "idle",    label: "Idle",             description: "You will appear as idle",                            color: "#faa61a" },
-  { value: "dnd",     label: "Do Not Disturb",   description: "You will not receive desktop notifications",         color: "#ed4245" },
-  { value: "offline", label: "Offline",            description: "You will appear offline but still have full access", color: "#747f8d" },
+  { value: "online",  label: "В сети",          description: "",                                                    color: "#3ba55d" },
+  { value: "idle",    label: "Нет на месте",             description: "Вы будете отображаться как отошедший",                            color: "#faa61a" },
+  { value: "dnd",     label: "Не беспокоить",   description: "Вы не будете получать уведомления на рабочем столе",         color: "#ed4245" },
+  { value: "offline", label: "Не в сети",            description: "Вы будете отображаться офлайн, но сохраните полный доступ", color: "#747f8d" },
 ];
 
 function buildStatusSelector(
@@ -427,7 +427,7 @@ function buildStatusSelector(
 ): HTMLDivElement {
   const wrapper = createElement("div", {});
   const separator = createElement("div", { class: "settings-separator" });
-  const sectionTitle = createElement("div", { class: "settings-section-title" }, "Status");
+  const sectionTitle = createElement("div", { class: "settings-section-title" }, "Статус");
   const optionsList = createElement("div", { class: "settings-status-options" });
 
   const currentStatus = loadPref<UserStatus>("userStatus", "online");
@@ -496,16 +496,16 @@ function buildDeleteAccountSection(
   const header = createElement("div", {
     class: "settings-section-title",
     style: "color:var(--red)",
-  }, "Danger Zone");
+  }, "Опасная зона");
 
   const description = createElement("div", {
     style: "color:var(--text-muted);font-size:13px;margin-bottom:12px",
-  }, "Permanently delete your account and all associated data.");
+  }, "Безвозвратно удалить аккаунт и все связанные данные.");
 
   const deleteBtn = createElement("button", {
     class: "ac-btn account-delete-btn",
     "data-testid": "delete-account-trigger",
-  }, "Delete Account");
+  }, "Удалить аккаунт");
 
   // Inline confirmation area (hidden by default)
   const confirmArea = createElement("div", {
@@ -516,12 +516,12 @@ function buildDeleteAccountSection(
 
   const warningText = createElement("div", {
     style: "color:var(--red);font-size:13px;margin-bottom:12px;line-height:1.4",
-  }, "This action is permanent and cannot be undone. All your data will be deleted. Enter your password to confirm.");
+  }, "Это действие необратимо. Все ваши данные будут удалены. Введите пароль для подтверждения.");
 
   const passwordInput = createElement("input", {
     class: "form-input",
     type: "password",
-    placeholder: "Enter your password",
+    placeholder: "Введите пароль",
     style: "margin-bottom:12px",
     "data-testid": "delete-account-password",
   });
@@ -535,11 +535,11 @@ function buildDeleteAccountSection(
   const confirmBtn = createElement("button", {
     class: "ac-btn account-delete-btn",
     "data-testid": "delete-account-confirm",
-  }, "Confirm Delete");
+  }, "Подтвердить удаление");
   const cancelBtn = createElement("button", {
     class: "ac-btn",
     style: "background:var(--bg-active)",
-  }, "Cancel");
+  }, "Отмена");
 
   appendChildren(btnRow, confirmBtn, cancelBtn);
   appendChildren(confirmArea, warningText, passwordInput, errorEl, btnRow);
@@ -565,19 +565,19 @@ function buildDeleteAccountSection(
   confirmBtn.addEventListener("click", () => {
     const pw = passwordInput.value;
     if (pw.length === 0) {
-      setText(errorEl, "Password is required.");
+      setText(errorEl, "Требуется пароль.");
       return;
     }
     setText(errorEl, "");
     confirmBtn.disabled = true;
-    setText(confirmBtn, "Deleting...");
+    setText(confirmBtn, "Удаление...");
 
     void options.onDeleteAccount(pw).then(() => {
       // Success — cleanup is handled by the callback (clears auth, navigates away)
     }).catch((err: unknown) => {
-      setText(errorEl, err instanceof Error ? err.message : "Failed to delete account.");
+      setText(errorEl, err instanceof Error ? err.message : "Не удалось удалить аккаунт.");
       confirmBtn.disabled = false;
-      setText(confirmBtn, "Confirm Delete");
+      setText(confirmBtn, "Подтвердить удаление");
     });
   }, { signal });
 
@@ -597,7 +597,7 @@ export function buildAccountTab(
 ): HTMLDivElement {
   const section = createElement("div", { class: "settings-pane active" });
   const user = authStore.getState().user;
-  const username = user?.username ?? "Unknown";
+  const username = user?.username ?? "Неизвестный";
 
   // Profile card
   const { card, headerName, usernameValue, editUserProfileBtn, editUsernameBtn } =
@@ -609,9 +609,9 @@ export function buildAccountTab(
 
   // Inline edit form
   const editForm = createElement("div", { class: "setting-row", style: "display:none;margin-bottom:16px" });
-  const editInput = createElement("input", { class: "form-input", type: "text", placeholder: "New username" });
-  const saveBtn = createElement("button", { class: "ac-btn" }, "Save");
-  const cancelBtn = createElement("button", { class: "ac-btn", style: "background:var(--bg-active)" }, "Cancel");
+  const editInput = createElement("input", { class: "form-input", type: "text", placeholder: "Новое имя пользователя" });
+  const saveBtn = createElement("button", { class: "ac-btn" }, "Сохранить");
+  const cancelBtn = createElement("button", { class: "ac-btn", style: "background:var(--bg-active)" }, "Отмена");
   appendChildren(editForm, editInput, saveBtn, cancelBtn);
 
   const usernameError = createElement("div", { style: "color:var(--red);font-size:13px;margin-top:4px" });
@@ -643,7 +643,7 @@ export function buildAccountTab(
       setText(usernameValue, newName);
       editForm.style.display = "none";
     }).catch((err: unknown) => {
-      setText(usernameError, err instanceof Error ? err.message : "Failed to update username.");
+      setText(usernameError, err instanceof Error ? err.message : "Не удалось обновить имя пользователя.");
     });
   }, { signal });
 

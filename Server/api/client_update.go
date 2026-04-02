@@ -74,15 +74,25 @@ func handleClientUpdate(u *updater.Updater) http.HandlerFunc {
 			return
 		}
 
+		platform := tauriPlatformResponse{
+			Signature: strings.TrimSpace(sigContent),
+			URL:       nsisURL,
+		}
+		platforms := map[string]tauriPlatformResponse{
+			target: platform,
+		}
+		// Backward-compatibility aliases for older Windows updater builds.
+		// Different Tauri/plugin versions may look up different keys.
+		if strings.HasPrefix(target, "windows") {
+			platforms["windows"] = platform
+			platforms["windows-x86_64"] = platform
+			platforms["windows-x86_64-nsis"] = platform
+		}
+
 		resp := tauriUpdateResponse{
-			Version: strings.TrimPrefix(info.Latest, "v"),
-			Notes:   info.ReleaseNotes,
-			Platforms: map[string]tauriPlatformResponse{
-				target: {
-					Signature: strings.TrimSpace(sigContent),
-					URL:       nsisURL,
-				},
-			},
+			Version:   strings.TrimPrefix(info.Latest, "v"),
+			Notes:     info.ReleaseNotes,
+			Platforms: platforms,
 		}
 
 		writeJSON(w, http.StatusOK, resp)

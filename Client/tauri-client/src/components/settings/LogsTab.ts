@@ -122,11 +122,11 @@ export function createLogsTab(
     // Version display
     const versionEl = createElement("div", {
       style: "font-size: 12px; color: var(--text-muted); margin: -8px 0 12px 0;",
-    }, "Client version: loading...");
+    }, "Версия клиента: загрузка...");
     section.appendChild(versionEl);
     void import("@tauri-apps/api/app").then(({ getVersion }) =>
-      getVersion().then((v) => { versionEl.textContent = `Client version: v${v}`; }),
-    ).catch(() => { versionEl.textContent = "Client version: unknown"; });
+      getVersion().then((v) => { versionEl.textContent = `Версия клиента: v${v}`; }),
+    ).catch(() => { versionEl.textContent = "Версия клиента: неизвестно"; });
 
     // Controls row
     const controls = createElement("div", {
@@ -134,7 +134,7 @@ export function createLogsTab(
     });
 
     // Filter dropdown
-    const filterLabel = createElement("span", { class: "setting-label", style: "margin: 0;" }, "Filter:");
+    const filterLabel = createElement("span", { class: "setting-label", style: "margin: 0;" }, "Фильтр:");
     const filterSelect = createElement("select", {
       style: "background: var(--bg-tertiary); color: var(--text-normal); border: 1px solid var(--bg-active); border-radius: 4px; padding: 4px 8px; font-size: 13px;",
     });
@@ -151,7 +151,7 @@ export function createLogsTab(
     }, { signal });
 
     // Log level selector
-    const levelLabel = createElement("span", { class: "setting-label", style: "margin: 0 0 0 16px;" }, "Min Level:");
+    const levelLabel = createElement("span", { class: "setting-label", style: "margin: 0 0 0 16px;" }, "Мин. уровень:");
     const levelSelect = createElement("select", {
       style: "background: var(--bg-tertiary); color: var(--text-normal); border: 1px solid var(--bg-active); border-radius: 4px; padding: 4px 8px; font-size: 13px;",
     });
@@ -174,7 +174,7 @@ export function createLogsTab(
     const copyBtn = createElement("button", {
       class: "ac-btn",
       style: "margin-left: auto;",
-    }, "Copy All");
+    }, "Скопировать все");
     copyBtn.addEventListener("click", () => {
       const entries = getLogBuffer();
       const filtered = logFilterLevel === "all"
@@ -189,30 +189,30 @@ export function createLogsTab(
         return `${base}\n${dataStr}`;
       }).join("\n");
       void navigator.clipboard.writeText(text).then(() => {
-        copyBtn.textContent = "Copied!";
-        setTimeout(() => { copyBtn.textContent = "Copy All"; }, 1500);
+        copyBtn.textContent = "Скопировано!";
+        setTimeout(() => { copyBtn.textContent = "Скопировать все"; }, 1500);
       }).catch(() => {
-        copyBtn.textContent = "Failed to copy";
-        setTimeout(() => { copyBtn.textContent = "Copy All"; }, 1500);
+        copyBtn.textContent = "Не удалось скопировать";
+        setTimeout(() => { copyBtn.textContent = "Скопировать все"; }, 1500);
       });
     }, { signal });
 
     // Clear button
-    const clearBtn = createElement("button", { class: "ac-btn" }, "Clear Logs");
+    const clearBtn = createElement("button", { class: "ac-btn" }, "Очистить логи");
     clearBtn.addEventListener("click", () => {
       clearLogBuffer();
       renderLogEntries();
     }, { signal });
 
     // Refresh button
-    const refreshBtn = createElement("button", { class: "ac-btn" }, "Refresh");
+    const refreshBtn = createElement("button", { class: "ac-btn" }, "Обновить");
     refreshBtn.addEventListener("click", () => renderLogEntries(), { signal });
 
     appendChildren(controls, filterLabel, filterSelect, levelLabel, levelSelect, copyBtn, clearBtn, refreshBtn);
     section.appendChild(controls);
 
     // Voice diagnostics panel
-    const diagHeader = createElement("h3", { style: "margin: 12px 0 6px 0;" }, "Voice Diagnostics");
+    const diagHeader = createElement("h3", { style: "margin: 12px 0 6px 0;" }, "Диагностика голоса");
     section.appendChild(diagHeader);
 
     const diagPanel = createElement("div", {
@@ -225,17 +225,17 @@ export function createLogsTab(
     }
 
     refreshDiag();
-    const diagRefresh = createElement("button", { class: "ac-btn", style: "margin-top: 6px;" }, "Refresh Diagnostics");
+    const diagRefresh = createElement("button", { class: "ac-btn", style: "margin-top: 6px;" }, "Обновить диагностику");
     diagRefresh.addEventListener("click", refreshDiag, { signal });
 
-    const diagCopy = createElement("button", { class: "ac-btn", style: "margin: 6px 0 0 6px;" }, "Copy Diagnostics");
+    const diagCopy = createElement("button", { class: "ac-btn", style: "margin: 6px 0 0 6px;" }, "Скопировать диагностику");
     diagCopy.addEventListener("click", () => {
       void navigator.clipboard.writeText(diagPanel.textContent ?? "").then(() => {
-        diagCopy.textContent = "Copied!";
-        setTimeout(() => { diagCopy.textContent = "Copy Diagnostics"; }, 1500);
+        diagCopy.textContent = "Скопировано!";
+        setTimeout(() => { diagCopy.textContent = "Скопировать диагностику"; }, 1500);
       }).catch(() => {
-        diagCopy.textContent = "Failed to copy";
-        setTimeout(() => { diagCopy.textContent = "Copy Diagnostics"; }, 1500);
+        diagCopy.textContent = "Не удалось скопировать";
+        setTimeout(() => { diagCopy.textContent = "Скопировать диагностику"; }, 1500);
       });
     }, { signal });
 

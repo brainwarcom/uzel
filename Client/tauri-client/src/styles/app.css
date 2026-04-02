@@ -1250,6 +1250,12 @@
   font-size: 13px; font-weight: 600; transition: background .15s; margin-left: auto;
 }
 .ac-btn:hover { background: var(--accent-hover); }
+.ac-btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  background: var(--border-strong);
+  color: var(--text-faint);
+}
 .ac-btn.account-delete-btn {
   background: var(--red); margin-left: 0;
 }

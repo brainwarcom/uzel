@@ -128,9 +128,23 @@ export function createVoiceWidgetCallbacks(
 // Sidebar Voice Callbacks
 // ---------------------------------------------------------------------------
 
-export function createSidebarVoiceCallbacks(ws: WsClient): SidebarVoiceCallbacks {
+export interface SidebarVoiceCallbackOptions {
+  readonly onVoiceChannelClick?: (channelId: number) => void;
+  readonly onCurrentVoiceChannelClick?: (channelId: number) => void;
+}
+
+export function createSidebarVoiceCallbacks(
+  ws: WsClient,
+  options?: SidebarVoiceCallbackOptions,
+): SidebarVoiceCallbacks {
   return {
     onVoiceJoin: (channelId: number) => {
+      options?.onVoiceChannelClick?.(channelId);
+      const currentChannelId = voiceStore.getState().currentChannelId;
+      if (currentChannelId === channelId) {
+        options?.onCurrentVoiceChannelClick?.(channelId);
+        return;
+      }
       log.info("Joining voice channel", { channelId });
       if (loadPref<boolean>("notificationSounds", true)) {
         playVoiceJoinSound();

@@ -96,7 +96,7 @@ export function createMessageController(
           channelId,
           error: String(err),
         });
-        showError("Failed to load messages");
+        showError("Не удалось загрузить сообщения");
       }
     }
   }
@@ -123,7 +123,7 @@ export function createMessageController(
           channelId,
           error: String(err),
         });
-        showError("Failed to load older messages");
+        showError("Не удалось загрузить более ранние сообщения");
       }
     }
   }

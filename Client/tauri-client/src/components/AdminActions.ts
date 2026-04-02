@@ -86,7 +86,7 @@ export function createMemberContextMenu(
   // Role submenu trigger
   const roleItem = createElement("div", {
     class: "context-menu__item",
-  }, "Change Role");
+  }, "Изменить роль");
 
   const roleSub = createElement("div", { class: "context-menu__submenu" });
   for (const role of options.availableRoles) {
@@ -117,8 +117,8 @@ export function createMemberContextMenu(
   // Kick with confirmation
   const kickItem = createElement("div", {
     class: "context-menu__item context-menu__item--danger",
-  }, "Kick");
-  withConfirmation(kickItem, "Are you sure?", () => {
+  }, "Исключить");
+  withConfirmation(kickItem, "Точно?", () => {
     void options.onKick();
   }, ac.signal);
   menu.appendChild(kickItem);
@@ -126,8 +126,8 @@ export function createMemberContextMenu(
   // Ban with confirmation
   const banItem = createElement("div", {
     class: "context-menu__item context-menu__item--danger",
-  }, "Ban");
-  withConfirmation(banItem, "Are you sure?", () => {
+  }, "Заблокировать");
+  withConfirmation(banItem, "Точно?", () => {
     void options.onBan();
   }, ac.signal);
   menu.appendChild(banItem);
@@ -152,7 +152,7 @@ export function createChannelContextMenu(
 
   // Edit Channel
   const editItem = createMenuItem(
-    "Edit Channel",
+    "Изменить канал",
     "context-menu__item",
     () => options.onEdit(),
     ac.signal,
@@ -161,7 +161,7 @@ export function createChannelContextMenu(
 
   // Create Channel
   const createItem = createMenuItem(
-    "Create Channel",
+    "Создать канал",
     "context-menu__item",
     () => options.onCreate(),
     ac.signal,
@@ -173,8 +173,8 @@ export function createChannelContextMenu(
   // Delete Channel with confirmation
   const deleteItem = createElement("div", {
     class: "context-menu__item context-menu__item--danger",
-  }, "Delete Channel");
-  withConfirmation(deleteItem, "Are you sure?", () => {
+  }, "Удалить канал");
+  withConfirmation(deleteItem, "Точно?", () => {
     void options.onDelete();
   }, ac.signal);
   menu.appendChild(deleteItem);

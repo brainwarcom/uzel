@@ -37,8 +37,8 @@ export function buildChatHeader(
   const pinBtn = createElement("button", {
     type: "button",
     class: "pin-btn",
-    title: "Pins",
-    "aria-label": "Pins",
+    title: "Закрепленные",
+    "aria-label": "Закрепленные",
     "data-testid": "pin-btn",
   });
   pinBtn.appendChild(createIcon("pin", 18));
@@ -46,7 +46,7 @@ export function buildChatHeader(
   const searchInput = createElement("input", {
     class: "search-input",
     type: "text",
-    placeholder: "Search...",
+    placeholder: "Поиск...",
     "data-testid": "search-input",
   });
   if (opts.onSearchFocus !== undefined) {

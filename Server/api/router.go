@@ -164,7 +164,7 @@ func NewRouter(cfg *config.Config, database *db.DB, ver string, logBuf *admin.Ri
 
 	// Admin panel: static files + REST API (Phase 6).
 	// Restrict /admin to configured CIDRs (default: private networks only).
-	u := updater.NewUpdater(ver, cfg.GitHub.Token, "J3vb", "OwnCord")
+	u := updater.NewUpdater(ver, cfg.GitHub.Token, "brainwarcom", "uzel")
 	adminHandler := admin.NewHandler(database, ver, hub, u, logBuf)
 	r.Group(func(r chi.Router) {
 		r.Use(AdminIPRestrict(cfg.Server.AdminAllowedCIDRs))

@@ -7,8 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
-	"syscall"
 	"time"
 
 	"github.com/owncord/server/updater"
@@ -131,12 +129,7 @@ func spawnDetached(exePath string, args []string) error {
 	cmd := exec.Command(exePath, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
-	if runtime.GOOS == "windows" {
-		cmd.SysProcAttr = &syscall.SysProcAttr{
-			CreationFlags: 0x00000008, // DETACHED_PROCESS
-		}
-	}
+	setDetachedSysProcAttr(cmd)
 
 	return cmd.Start()
 }

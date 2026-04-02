@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS settings (
 
 -- Default server settings.
 INSERT OR IGNORE INTO settings (key, value) VALUES
-    ('server_name',        'OwnCord Server'),
+    ('server_name',        'Uzel Server'),
     ('server_icon',        ''),
     ('motd',               'Welcome!'),
     ('max_upload_bytes',   '26214400'),

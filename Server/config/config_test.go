@@ -24,7 +24,7 @@ func TestLoadDefaults(t *testing.T) {
 		want any
 	}{
 		{"Server.Port", cfg.Server.Port, 8443},
-		{"Server.Name", cfg.Server.Name, "OwnCord Server"},
+		{"Server.Name", cfg.Server.Name, "Uzel Server"},
 		{"Server.DataDir", cfg.Server.DataDir, "data"},
 		{"Database.Path", cfg.Database.Path, "data/chatserver.db"},
 		{"TLS.Mode", cfg.TLS.Mode, "self_signed"},

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OwnCord — Admin Panel</title>
+<title>Uzel — Admin Panel</title>
 <style>
   :root {
     --bg-tertiary:#1e1f22;--bg-secondary:#2b2d31;--bg-primary:#313338;
@@ -202,7 +202,7 @@
 <!-- Auth: Setup -->
 <div class="auth-overlay" id="setupOverlay">
   <div class="auth-box">
-    <h2>Welcome to OwnCord</h2>
+    <h2>Welcome to Uzel</h2>
     <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px">No accounts exist yet. Create the owner account to get started.</p>
     <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="setupUser" autocomplete="username" placeholder="Choose a username"></div>
     <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="setupPass" type="password" autocomplete="new-password" placeholder="Min 8 characters"></div>
@@ -226,7 +226,7 @@
 <!-- Auth: Login -->
 <div class="auth-overlay" id="loginOverlay">
   <div class="auth-box">
-    <h2>OwnCord Admin</h2>
+    <h2>Uzel Admin</h2>
     <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="loginUser" autocomplete="username" placeholder="admin"></div>
     <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPass" type="password" autocomplete="current-password" placeholder="••••••••"></div>
     <button class="btn btn-accent" id="loginBtn" style="width:100%">Sign In</button>
@@ -239,10 +239,10 @@
   <div class="sidebar">
     <div class="sidebar-header"><div class="sidebar-brand">
       <div class="sidebar-logo"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2L4 5.5v5c0 5.25 3.4 10.15 8 11.5 4.6-1.35 8-6.25 8-11.5v-5L12 2zm0 3l1.5 3h3.2l-2.6 1.9 1 3.1L12 11.1 8.9 13l1-3.1L7.3 8h3.2L12 5z"/></svg></div>
-      <div><div class="sidebar-title">OwnCord</div><div class="sidebar-subtitle">Admin Panel</div></div>
+      <div><div class="sidebar-title">Uzel</div><div class="sidebar-subtitle">Admin Panel</div></div>
     </div></div>
     <nav class="sidebar-nav" id="sidebarNav" role="navigation" aria-label="Admin sections"></nav>
-    <div class="sidebar-footer" id="sidebarFooter">OwnCord</div>
+    <div class="sidebar-footer" id="sidebarFooter">Uzel</div>
   </div>
   <div class="content" id="content"></div>
 </div>
@@ -732,7 +732,7 @@ async function renderSettings(){
   state._settings={...settings};
   const v=k=>settings[k]||'';
   const isOn=k=>v(k)==='1'||v(k)==='true';
-  let html='<div class="page-title">Server Settings</div><div class="page-desc">Configure your OwnCord server</div>';
+  let html='<div class="page-title">Server Settings</div><div class="page-desc">Configure your Uzel server</div>';
   html+='<div class="section-card"><div class="section-card-header"><h3>General</h3></div><div class="section-card-body">';
   html+='<div class="setting-row"><div class="setting-info"><div class="setting-name">Server Name</div></div><div class="setting-ctrl"><input class="form-input" id="s-server_name" value="'+esc(v('server_name'))+'" style="width:240px" oninput="markSettingsChanged()"></div></div>';
   html+='<div class="setting-row"><div class="setting-info"><div class="setting-name">Server Icon URL</div></div><div class="setting-ctrl"><input class="form-input" id="s-server_icon" value="'+esc(v('server_icon'))+'" style="width:240px" oninput="markSettingsChanged()"></div></div>';

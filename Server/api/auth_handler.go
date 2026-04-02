@@ -515,7 +515,7 @@ func handleEnableTOTP(pendingStore *auth.PendingTOTPStore) http.HandlerFunc {
 
 		pendingStore.Put(user.ID, secret)
 		writeJSON(w, http.StatusOK, totpEnableResponse{
-			QRURI:       auth.BuildTOTPURI(user.Username, secret, "OwnCord"),
+			QRURI:       auth.BuildTOTPURI(user.Username, secret, "Uzel"),
 			BackupCodes: []string{},
 		})
 	}

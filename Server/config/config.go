@@ -77,7 +77,7 @@ func defaults() Config {
 	return Config{
 		Server: ServerConfig{
 			Port:           8443,
-			Name:           "OwnCord Server",
+			Name:           "Uzel Server",
 			DataDir:        "data",
 			AllowedOrigins: []string{"*"},
 			TrustedProxies: []string{},
@@ -112,10 +112,10 @@ func defaults() Config {
 }
 
 // defaultYAML is the content written when no config file is present.
-const defaultYAML = `# OwnCord Server Configuration
+const defaultYAML = `# Uzel Server Configuration
 server:
   port: 8443
-  name: "OwnCord Server"
+  name: "Uzel Server"
   data_dir: "data"
   # allowed_origins: ["*"]   # restrict WebSocket origins, e.g. ["https://example.com"]
   # trusted_proxies: []       # CIDRs of trusted reverse proxies, e.g. ["10.0.0.0/8"]

@@ -68,7 +68,7 @@ func NewHub(database *db.DB, limiter *auth.RateLimiter) *Hub {
 		replayBuf:    NewEventRingBuffer(1000),
 		registry:     reg,
 		permChecker:  permissions.NewChecker(database),
-		settingsName: "OwnCord Server",
+		settingsName: "Uzel Server",
 		settingsMotd: "Welcome!",
 	}
 	h.refreshSettingsLocked()

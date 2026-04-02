@@ -52,8 +52,8 @@ func GenerateSelfSigned(certFile, keyFile string) error {
 	template := &x509.Certificate{
 		SerialNumber: serial,
 		Subject: pkix.Name{
-			Organization: []string{"OwnCord Server"},
-			CommonName:   "OwnCord Self-Signed",
+			Organization: []string{"Uzel Server"},
+			CommonName:   "Uzel Self-Signed",
 		},
 		NotBefore:             now,
 		NotAfter:              now.Add(10 * 365 * 24 * time.Hour),

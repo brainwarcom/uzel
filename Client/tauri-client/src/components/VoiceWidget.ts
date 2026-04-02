@@ -216,7 +216,7 @@ export function createVoiceWidget(options: VoiceWidgetOptions): MountableCompone
       class: extraClass ?? "",
       "aria-label": label,
     });
-    btn.appendChild(createIcon(icon, 18));
+    btn.appendChild(createIcon(icon, 24));
     btn.addEventListener("click", handler, { signal: ac.signal });
     return btn;
   }

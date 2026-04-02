@@ -219,11 +219,20 @@
 .vw-connected { color: var(--green); font-weight: 700; }
 .vw-timer { color: var(--green); font-size: 11px; opacity: 0.8; font-variant-numeric: tabular-nums; }
 .vw-channel { color: var(--text-muted); }
-.vw-controls { display: flex; gap: 4px; padding: 4px 4px 0; }
+.vw-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px 4px;
+}
 .vw-controls button {
-  flex: 1; height: 32px; border-radius: var(--radius-sm);
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  flex: 0 0 auto;
   background: var(--bg-active); color: var(--text-muted);
-  font-size: 14px; transition: all .1s;
+  font-size: 18px; transition: all .1s;
   display: flex; align-items: center; justify-content: center;
 }
 .vw-controls button:hover { background: var(--bg-hover); color: var(--text-normal); }

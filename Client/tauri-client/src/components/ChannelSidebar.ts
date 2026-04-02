@@ -27,7 +27,14 @@ import {
   isCategoryCollapsed,
 } from "@stores/ui.store";
 import { voiceStore, getChannelVoiceUsers } from "@stores/voice.store";
-import { setUserVolume, getUserVolume } from "@lib/livekitSession";
+import {
+  setUserVolume,
+  getUserVolume,
+  setOutputVolume,
+  setScreenshareAudioVolume,
+  muteScreenshareAudio,
+  getScreenshareAudioMuted,
+} from "@lib/livekitSession";
 import { SCREENSHARE_TILE_ID_OFFSET } from "@lib/constants";
 import { attachStreamPreview, attachScrollCollapse } from "@lib/streamPreview";
 
@@ -41,6 +48,7 @@ function showUserVolumeMenu(
   x: number,
   y: number,
   signal: AbortSignal,
+  hasScreenshare = false,
 ): void {
   // Remove any existing context menus
   document.querySelectorAll(".user-vol-menu").forEach((el) => el.remove());
@@ -98,6 +106,70 @@ function showUserVolumeMenu(
   });
   menu.appendChild(resetBtn);
 
+  if (hasScreenshare) {
+    const shareSep = createElement("div", { class: "context-menu-sep" });
+    menu.appendChild(shareSep);
+
+    const shareCurrentVolRaw = localStorage.getItem(`screenshareVolume_${userId}`);
+    const shareCurrentVolNum = Number(shareCurrentVolRaw);
+    const shareCurrentVol = Number.isFinite(shareCurrentVolNum)
+      ? Math.max(0, Math.min(100, Math.round(shareCurrentVolNum)))
+      : 100;
+
+    const shareLabel = createElement("div", {
+      class: "context-menu-item",
+      style: "font-size:12px;color:var(--text-muted);cursor:default;pointer-events:none",
+    }, `Громкость демонстрации: ${shareCurrentVol}%`);
+    menu.appendChild(shareLabel);
+
+    const shareRow = createElement("div", {
+      style: "padding:4px 10px;display:flex;align-items:center;gap:8px",
+    });
+    const shareSlider = createElement("input", {
+      type: "range",
+      class: "settings-slider",
+      min: "0",
+      max: "100",
+      value: String(shareCurrentVol),
+      style: "flex:1",
+    });
+    const shareVal = createElement("span", {
+      class: "slider-val",
+      style: "min-width:40px;text-align:right;font-size:12px;color:var(--text-muted)",
+    }, `${shareCurrentVol}%`);
+
+    const applyScreenshareVolume = (percent: number): void => {
+      const clamped = Math.max(0, Math.min(100, percent));
+      localStorage.setItem(`screenshareVolume_${userId}`, String(clamped));
+      setScreenshareAudioVolume(userId, clamped / 100);
+      const muted = getScreenshareAudioMuted(userId);
+      if (clamped > 0 && muted) {
+        muteScreenshareAudio(userId, false);
+      } else if (clamped === 0 && !muted) {
+        muteScreenshareAudio(userId, true);
+      }
+    };
+
+    shareSlider.addEventListener("input", () => {
+      const val = Number(shareSlider.value);
+      setText(shareVal, `${val}%`);
+      setText(shareLabel, `Громкость демонстрации: ${val}%`);
+      applyScreenshareVolume(val);
+    });
+
+    appendChildren(shareRow, shareSlider, shareVal);
+    menu.appendChild(shareRow);
+
+    const shareReset = createElement("div", { class: "context-menu-item" }, "Сбросить громкость демонстрации");
+    shareReset.addEventListener("click", () => {
+      shareSlider.value = "100";
+      setText(shareVal, "100%");
+      setText(shareLabel, "Громкость демонстрации: 100%");
+      applyScreenshareVolume(100);
+    });
+    menu.appendChild(shareReset);
+  }
+
   menu.style.left = `${x}px`;
   menu.style.top = `${y}px`;
   document.body.appendChild(menu);
@@ -121,16 +193,105 @@ function showUserVolumeMenu(
   });
 }
 
+function getSavedOutputVolume(): number {
+  const raw = localStorage.getItem("outputVolume");
+  const parsed = raw === null ? 100 : Number(raw);
+  if (!Number.isFinite(parsed)) return 100;
+  return Math.max(0, Math.min(200, Math.round(parsed)));
+}
+
+function showSelfOutputVolumeMenu(
+  x: number,
+  y: number,
+  signal: AbortSignal,
+): void {
+  document.querySelectorAll(".user-vol-menu").forEach((el) => el.remove());
+
+  const menu = createElement("div", { class: "context-menu user-vol-menu" });
+
+  const header = createElement("div", {
+    class: "context-menu-item",
+    style: "font-weight:600;cursor:default;pointer-events:none",
+  }, "Громкость воспроизведения");
+  menu.appendChild(header);
+
+  const sep = createElement("div", { class: "context-menu-sep" });
+  menu.appendChild(sep);
+
+  const currentVol = getSavedOutputVolume();
+  const volLabel = createElement("div", {
+    class: "context-menu-item",
+    style: "font-size:12px;color:var(--text-muted);cursor:default;pointer-events:none",
+  }, `Общая громкость: ${currentVol}%`);
+  menu.appendChild(volLabel);
+
+  const sliderRow = createElement("div", {
+    style: "padding:4px 10px;display:flex;align-items:center;gap:8px",
+  });
+  const slider = createElement("input", {
+    type: "range",
+    class: "settings-slider",
+    min: "0",
+    max: "200",
+    value: String(currentVol),
+    style: "flex:1",
+  });
+  const valLabel = createElement("span", {
+    class: "slider-val",
+    style: "min-width:40px;text-align:right;font-size:12px;color:var(--text-muted)",
+  }, `${currentVol}%`);
+
+  slider.addEventListener("input", () => {
+    const val = Number(slider.value);
+    setText(valLabel, `${val}%`);
+    setText(volLabel, `Общая громкость: ${val}%`);
+    setOutputVolume(val);
+  });
+
+  appendChildren(sliderRow, slider, valLabel);
+  menu.appendChild(sliderRow);
+
+  const resetBtn = createElement("div", { class: "context-menu-item" }, "Сбросить громкость");
+  resetBtn.addEventListener("click", () => {
+    setOutputVolume(100);
+    slider.value = "100";
+    setText(valLabel, "100%");
+    setText(volLabel, "Общая громкость: 100%");
+  });
+  menu.appendChild(resetBtn);
+
+  menu.style.left = `${x}px`;
+  menu.style.top = `${y}px`;
+  document.body.appendChild(menu);
+
+  const dismissAc = new AbortController();
+  setTimeout(() => {
+    if (dismissAc.signal.aborted) return;
+    document.addEventListener("mousedown", (e: MouseEvent) => {
+      if (!menu.contains(e.target as Node)) {
+        menu.remove();
+        dismissAc.abort();
+      }
+    }, { signal: dismissAc.signal });
+  }, 0);
+
+  signal.addEventListener("abort", () => {
+    menu.remove();
+    dismissAc.abort();
+  });
+}
+
 function showUserVolumeMenuNearElement(
   userId: number,
   username: string,
   anchor: HTMLElement,
   signal: AbortSignal,
+  hasScreenshare = false,
 ): void {
   const rect = anchor.getBoundingClientRect();
   const x = Math.round(rect.right + 8);
   const y = Math.round(rect.top + Math.min(24, rect.height / 2));
-  showUserVolumeMenu(userId, username, x, y, signal);
+  showUserVolumeMenu(userId, username, x, y, signal, hasScreenshare);
 }
 
 export interface ChannelReorderData {
@@ -314,30 +475,50 @@ function renderVoiceChannelItem(
         row.appendChild(muteIcon);
       }
 
-      // Right-click for per-user volume (skip for own user)
+      // Volume editor on click:
+      // - own row -> global output volume
+      // - other user -> per-user volume
       const currentUser = getCurrentUser();
-      if (currentUser === null || currentUser.id !== user.userId) {
-        // Left-click opens the same per-user volume editor for faster access.
-        row.addEventListener("click", (e) => {
-          if (e.button !== 0) return;
-          e.preventDefault();
-          e.stopPropagation();
-          showUserVolumeMenuNearElement(
-            user.userId,
-            user.username || "Неизвестный",
-            row,
+      const isSelf = currentUser !== null && currentUser.id === user.userId;
+      row.addEventListener("click", (e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (isSelf) {
+          showSelfOutputVolumeMenu(
+            Math.round(row.getBoundingClientRect().right + 8),
+            Math.round(row.getBoundingClientRect().top + 12),
             signal,
           );
-        }, { signal });
+          return;
+        }
+        showUserVolumeMenuNearElement(
+          user.userId,
+          user.username || "Неизвестный",
+          row,
+          signal,
+          user.screenshare,
+        );
+      }, { signal });
 
-        row.addEventListener("contextmenu", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          showUserVolumeMenu(user.userId, user.username || "Неизвестный", e.clientX, e.clientY, signal);
-        }, { signal });
+      row.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isSelf) {
+          showSelfOutputVolumeMenu(e.clientX, e.clientY, signal);
+          return;
+        }
+        showUserVolumeMenu(
+          user.userId,
+          user.username || "Неизвестный",
+          e.clientX,
+          e.clientY,
+          signal,
+          user.screenshare,
+        );
+      }, { signal });
 
-        row.style.cursor = "pointer";
-      }
+      row.style.cursor = "pointer";
 
       // Double-click to watch stream (if user has camera or screenshare).
       // Single click is reserved for per-user volume.

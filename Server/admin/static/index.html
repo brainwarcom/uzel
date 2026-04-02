@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Uzel — Admin Panel</title>
+<title>Uzel — Панель администратора</title>
 <style>
   :root {
     --bg-tertiary:#1e1f22;--bg-secondary:#2b2d31;--bg-primary:#313338;
@@ -202,12 +202,12 @@
 <!-- Auth: Setup -->
 <div class="auth-overlay" id="setupOverlay">
   <div class="auth-box">
-    <h2>Welcome to Uzel</h2>
-    <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px">No accounts exist yet. Create the owner account to get started.</p>
-    <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="setupUser" autocomplete="username" placeholder="Choose a username"></div>
-    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="setupPass" type="password" autocomplete="new-password" placeholder="Min 8 characters"></div>
-    <div class="form-group"><label class="form-label">Confirm Password</label><input class="form-input" id="setupConfirm" type="password" autocomplete="new-password" placeholder="Re-enter password"></div>
-    <button class="btn btn-accent" id="setupBtn" style="width:100%">Create Owner Account</button>
+    <h2>Добро пожаловать в Uzel</h2>
+    <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px">Аккаунтов пока нет. Создайте владельца сервера, чтобы начать.</p>
+    <div class="form-group"><label class="form-label">Имя пользователя</label><input class="form-input" id="setupUser" autocomplete="username" placeholder="Выберите имя пользователя"></div>
+    <div class="form-group"><label class="form-label">Пароль</label><input class="form-input" id="setupPass" type="password" autocomplete="new-password" placeholder="Минимум 8 символов"></div>
+    <div class="form-group"><label class="form-label">Подтвердите пароль</label><input class="form-input" id="setupConfirm" type="password" autocomplete="new-password" placeholder="Повторите пароль"></div>
+    <button class="btn btn-accent" id="setupBtn" style="width:100%">Создать аккаунт владельца</button>
     <div class="auth-error" id="setupErr"></div>
   </div>
 </div>
@@ -215,21 +215,21 @@
 <!-- Auth: Setup Success -->
 <div class="auth-overlay" id="setupSuccessOverlay">
   <div class="auth-box">
-    <h2>Setup Complete!</h2>
-    <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Your owner account has been created. Here's your invite code:</p>
-    <div class="code-copy"><code id="inviteCode"></code><button class="btn btn-ghost" onclick="copyInvite()">Copy</button></div>
-    <p style="color:var(--yellow);font-size:13px;margin:16px 0">Save this code! Share it with people you want to invite.</p>
-    <button class="btn btn-accent" id="setupContinueBtn" style="width:100%">Continue to Admin Panel</button>
+    <h2>Настройка завершена!</h2>
+    <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Аккаунт владельца создан. Вот ваш инвайт-код:</p>
+    <div class="code-copy"><code id="inviteCode"></code><button class="btn btn-ghost" onclick="copyInvite()">Копировать</button></div>
+    <p style="color:var(--yellow);font-size:13px;margin:16px 0">Сохраните этот код и отправьте тем, кого хотите пригласить.</p>
+    <button class="btn btn-accent" id="setupContinueBtn" style="width:100%">Перейти в панель администратора</button>
   </div>
 </div>
 
 <!-- Auth: Login -->
 <div class="auth-overlay" id="loginOverlay">
   <div class="auth-box">
-    <h2>Uzel Admin</h2>
-    <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="loginUser" autocomplete="username" placeholder="admin"></div>
-    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPass" type="password" autocomplete="current-password" placeholder="••••••••"></div>
-    <button class="btn btn-accent" id="loginBtn" style="width:100%">Sign In</button>
+    <h2>Uzel Админка</h2>
+    <div class="form-group"><label class="form-label">Имя пользователя</label><input class="form-input" id="loginUser" autocomplete="username" placeholder="admin"></div>
+    <div class="form-group"><label class="form-label">Пароль</label><input class="form-input" id="loginPass" type="password" autocomplete="current-password" placeholder="••••••••"></div>
+    <button class="btn btn-accent" id="loginBtn" style="width:100%">Войти</button>
     <div class="auth-error" id="loginErr"></div>
   </div>
 </div>
@@ -239,7 +239,7 @@
   <div class="sidebar">
     <div class="sidebar-header"><div class="sidebar-brand">
       <div class="sidebar-logo"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2L4 5.5v5c0 5.25 3.4 10.15 8 11.5 4.6-1.35 8-6.25 8-11.5v-5L12 2zm0 3l1.5 3h3.2l-2.6 1.9 1 3.1L12 11.1 8.9 13l1-3.1L7.3 8h3.2L12 5z"/></svg></div>
-      <div><div class="sidebar-title">Uzel</div><div class="sidebar-subtitle">Admin Panel</div></div>
+      <div><div class="sidebar-title">Uzel</div><div class="sidebar-subtitle">Панель администратора</div></div>
     </div></div>
     <nav class="sidebar-nav" id="sidebarNav" role="navigation" aria-label="Admin sections"></nav>
     <div class="sidebar-footer" id="sidebarFooter">Uzel</div>
@@ -337,20 +337,20 @@ async function checkAuth(){
 document.getElementById('setupBtn').onclick=async()=>{
   const u=document.getElementById('setupUser').value.trim(),p=document.getElementById('setupPass').value,c=document.getElementById('setupConfirm').value,err=document.getElementById('setupErr');
   err.textContent='';
-  if(!u||!p){err.textContent='Username and password are required.';return}
-  if(p!==c){err.textContent='Passwords do not match.';return}
-  try{const r=await fetch('/admin/api/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});const d=await r.json();if(!r.ok)throw new Error(d.message||'Setup failed');
+  if(!u||!p){err.textContent='Нужно указать имя пользователя и пароль.';return}
+  if(p!==c){err.textContent='Пароли не совпадают.';return}
+  try{const r=await fetch('/admin/api/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});const d=await r.json();if(!r.ok)throw new Error(d.message||'Ошибка первичной настройки');
     state.token=d.token;localStorage.setItem('admin_token',state.token);
     document.getElementById('inviteCode').textContent=d.invite_code;showOverlay('setupSuccessOverlay');
   }catch(e){err.textContent=e.message}
 };
 document.getElementById('setupContinueBtn').onclick=()=>{showApp();renderNav();renderContent()};
-function copyInvite(){navigator.clipboard.writeText(document.getElementById('inviteCode').textContent).then(()=>showToast('Copied!','info'))}
+function copyInvite(){navigator.clipboard.writeText(document.getElementById('inviteCode').textContent).then(()=>showToast('Скопировано!','info'))}
 
 document.getElementById('loginBtn').onclick=async()=>{
   const u=document.getElementById('loginUser').value.trim(),p=document.getElementById('loginPass').value,err=document.getElementById('loginErr');
   err.textContent='';
-  try{const r=await fetch('/api/v1/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});const d=await r.json();if(!r.ok)throw new Error(d.message||'Login failed');
+  try{const r=await fetch('/api/v1/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});const d=await r.json();if(!r.ok)throw new Error(d.message||'Ошибка входа');
     state.token=d.token;localStorage.setItem('admin_token',state.token);showApp();renderNav();renderContent();
   }catch(e){err.textContent=e.message}
 };
@@ -360,19 +360,19 @@ document.getElementById('loginBtn').onclick=async()=>{
 
 /* ═══ Nav ═══ */
 const NAV=[
-  {section:'Management'},
-  {id:'dashboard',label:'Dashboard',icon:I.dashboard},
-  {id:'users',label:'Users',icon:I.users},
-  {id:'channels',label:'Channels',icon:I.channels},
+  {section:'Управление'},
+  {id:'dashboard',label:'Обзор',icon:I.dashboard},
+  {id:'users',label:'Пользователи',icon:I.users},
+  {id:'channels',label:'Каналы',icon:I.channels},
   {sep:true},
-  {section:'Configuration'},
-  {id:'audit',label:'Audit Log',icon:I.audit},
-  {id:'logs',label:'Server Logs',icon:I.logs},
-  {id:'settings',label:'Settings',icon:I.settings,unsaved:()=>state.settingsChanged},
-  {id:'backups',label:'Backups',icon:I.backup},
-  {id:'updates',label:'Updates',icon:I.updates},
+  {section:'Конфигурация'},
+  {id:'audit',label:'Журнал аудита',icon:I.audit},
+  {id:'logs',label:'Логи сервера',icon:I.logs},
+  {id:'settings',label:'Настройки',icon:I.settings,unsaved:()=>state.settingsChanged},
+  {id:'backups',label:'Резервные копии',icon:I.backup},
+  {id:'updates',label:'Обновления',icon:I.updates},
   {sep:true},
-  {id:'logout',label:'Sign Out',icon:I.logout,danger:true},
+  {id:'logout',label:'Выйти',icon:I.logout,danger:true},
 ];
 
 function renderNav(){
@@ -398,31 +398,31 @@ function doLogout(){state.logConnectSeq++;if(state.logEventSource){state.logEven
 function renderContent(){
   const c=document.getElementById('content');c.scrollTop=0;
   const r={dashboard:renderDashboard,users:renderUsers,channels:renderChannels,audit:renderAudit,logs:renderLogs,settings:renderSettings,backups:renderBackups,updates:renderUpdates};
-  c.innerHTML='<div class="page-title">Loading...</div>';
+  c.innerHTML='<div class="page-title">Загрузка...</div>';
   const fn=r[state.section]||renderDashboard;
   const result=fn();
-  if(result instanceof Promise)result.then(html=>{c.innerHTML=html}).catch(e=>{c.innerHTML='<div class="page-title">Error</div><p style="color:var(--red)">'+esc(e.message)+'</p>'});
+  if(result instanceof Promise)result.then(html=>{c.innerHTML=html}).catch(e=>{c.innerHTML='<div class="page-title">Ошибка</div><p style="color:var(--red)">'+esc(e.message)+'</p>'});
   else c.innerHTML=result;
 }
 
 /* ═══ Dashboard ═══ */
 async function renderDashboard(){
-  try{state.cachedStats=await api('GET','/stats')}catch(e){return'<div class="page-title">Dashboard</div><p style="color:var(--red)">Failed to load stats: '+esc(e.message)+'</p>'}
+  try{state.cachedStats=await api('GET','/stats')}catch(e){return'<div class="page-title">Обзор</div><p style="color:var(--red)">Не удалось загрузить статистику: '+esc(e.message)+'</p>'}
   try{const r=await fetch('/admin/api/updates',{headers:{'Authorization':'Bearer '+state.token}});if(r.ok)state.cachedUpdate=await r.json()}catch(e){}
   const s=state.cachedStats;const u=state.cachedUpdate;
-  let html='<div class="page-title">Dashboard</div><div class="page-desc">Server overview and statistics</div>';
-  if(u&&u.update_available)html+='<div class="update-card" style="border-color:var(--accent);margin-bottom:20px"><div class="update-icon" style="background:var(--accent-glow);color:var(--accent)">'+I.updates+'</div><div class="update-info"><div class="update-ver">Update Available: '+esc(u.latest)+'</div><div class="update-notes">Current: '+esc(u.current)+' &mdash; <button class="btn btn-accent" style="margin-left:8px" onclick="navigateTo(\'updates\')">View Update</button></div></div></div>';
+  let html='<div class="page-title">Обзор</div><div class="page-desc">Обзор сервера и статистика</div>';
+  if(u&&u.update_available)html+='<div class="update-card" style="border-color:var(--accent);margin-bottom:20px"><div class="update-icon" style="background:var(--accent-glow);color:var(--accent)">'+I.updates+'</div><div class="update-info"><div class="update-ver">Доступно обновление: '+esc(u.latest)+'</div><div class="update-notes">Текущая: '+esc(u.current)+' &mdash; <button class="btn btn-accent" style="margin-left:8px" onclick="navigateTo(\'updates\')">Смотреть обновление</button></div></div></div>';
   html+='<div class="stat-grid">';
-  html+='<div class="stat-card"><div class="stat-card-header"><span class="stat-card-label">Total Users</span><div class="stat-card-icon" style="background:rgba(35,165,90,.15);color:var(--green)">'+I.users+'</div></div><div class="stat-card-value">'+(s.user_count||0)+'</div><div class="stat-card-sub">registered</div></div>';
+  html+='<div class="stat-card"><div class="stat-card-header"><span class="stat-card-label">Всего пользователей</span><div class="stat-card-icon" style="background:rgba(35,165,90,.15);color:var(--green)">'+I.users+'</div></div><div class="stat-card-value">'+(s.user_count||0)+'</div><div class="stat-card-sub">зарегистрировано</div></div>';
   html+='<div class="stat-card"><div class="stat-card-header"><span class="stat-card-label">Messages</span><div class="stat-card-icon" style="background:var(--accent-glow);color:var(--accent)">'+I.megaphone+'</div></div><div class="stat-card-value">'+(s.message_count||0).toLocaleString()+'</div><div class="stat-card-sub">total</div></div>';
-  html+='<div class="stat-card"><div class="stat-card-header"><span class="stat-card-label">Channels</span><div class="stat-card-icon" style="background:rgba(240,178,50,.15);color:var(--yellow)">'+I.channels+'</div></div><div class="stat-card-value">'+(s.channel_count||0)+'</div><div class="stat-card-sub">active</div></div>';
-  html+='<div class="stat-card"><div class="stat-card-header"><span class="stat-card-label">Database</span><div class="stat-card-icon" style="background:rgba(88,101,242,.15);color:var(--accent)">'+I.backup+'</div></div><div class="stat-card-value">'+fmtBytes(s.db_size_bytes||0)+'</div><div class="stat-card-sub">SQLite</div></div>';
+  html+='<div class="stat-card"><div class="stat-card-header"><span class="stat-card-label">Каналы</span><div class="stat-card-icon" style="background:rgba(240,178,50,.15);color:var(--yellow)">'+I.channels+'</div></div><div class="stat-card-value">'+(s.channel_count||0)+'</div><div class="stat-card-sub">активных</div></div>';
+  html+='<div class="stat-card"><div class="stat-card-header"><span class="stat-card-label">База данных</span><div class="stat-card-icon" style="background:rgba(88,101,242,.15);color:var(--accent)">'+I.backup+'</div></div><div class="stat-card-value">'+fmtBytes(s.db_size_bytes||0)+'</div><div class="stat-card-sub">SQLite</div></div>';
   html+='</div>';
   // Recent audit
   try{
     const entries=await api('GET','/audit-log?limit=5&offset=0');
     if(entries&&entries.length){
-      html+='<div class="section-card"><div class="section-card-header"><h3>Recent Activity</h3><button class="btn btn-ghost" onclick="navigateTo(\'audit\')">View All</button></div><div class="section-card-body">';
+      html+='<div class="section-card"><div class="section-card-header"><h3>Последняя активность</h3><button class="btn btn-ghost" onclick="navigateTo(\'audit\')">Показать все</button></div><div class="section-card-body">';
       entries.forEach(a=>{html+='<div class="activity-item"><div class="activity-icon" style="background:'+actionColor(a.action)+'22;color:'+actionColor(a.action)+'">'+I.audit+'</div><div><div class="activity-text"><strong>'+esc(a.actor_name||a.actor_id)+'</strong> '+esc(a.action)+' <strong>'+esc(a.target_type)+(a.target_id?' #'+a.target_id:'')+'</strong></div><div class="activity-time">'+esc(a.created_at)+(a.detail?' — '+esc(a.detail):'')+'</div></div></div>'});
       html+='</div></div>';
     }

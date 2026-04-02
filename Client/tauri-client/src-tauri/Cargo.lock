@@ -5356,7 +5356,7 @@ dependencies = [
 
 [[package]]
 name = "uzel"
-version = "1.0.8"
+version = "1.0.9"
 dependencies = [
  "env_logger",
  "futures-util",
